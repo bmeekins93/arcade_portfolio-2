@@ -184,7 +184,7 @@
     const PROJECTS = {
       onlycans: {
         title: "OnlyCANs Chronicles",
-        url: "",
+        url: "https://github.com/bmeekins93/onlycans_chronicles",
         text: `A tongue-in-cheek brawler where expired cans fight for pantry supremacy.
 Expect puns and plenty of dented egos.`
       },
@@ -199,6 +199,37 @@ Even cyberpunk mercs need to send sarcastic bouquets now and then.`
         url: "",
         text: `Corporate documentation turned into a retro arcade challenge.
 Navigate the labyrinth of grocery lore with humor.`
+      },
+      notyourday: {
+        title: "NOT YOUR DAY",
+        url: "https://github.com/bmeekins93/Not_Your_Day",
+        text: `WARNING: SENSORY OVERLOAD.
+A chaotic neon loop of lasers, glitch, and bad decisions.
+Press Enter to launch. You were warned.`
+      },
+      pro2mussy: {
+        title: "pro2mussy",
+        url: "https://github.com/bmeekins93/pro2mussy",
+        text: `A chaotic experiment in meme-driven development.
+It is sooooooooooooooooooo dumb. You have been warned.`
+      },
+      bash: {
+        title: "OnlyCans: Supermarket Bash",
+        url: "https://github.com/bmeekins93/onlycans-supermarket-bash",
+        text: `The ultimate grocery store showdown.
+Choose your fighter and battle for the last discount item.`
+      },
+      jayf: {
+        title: "Jay-F Remix",
+        url: "https://github.com/bmeekins93/jayF-durdayup-remix",
+        text: `Drop the beat with this musical remix experiment.
+Rhythm, visualizers, and good vibes only.`
+      },
+      ygfs: {
+        title: "Yum Guzzlers From Space",
+        url: "https://github.com/bmeekins93/YGFS",
+        text: `Defend Earth from the hungry Patricks!
+Coat the invaders in delicious yum to save the planet.`
       }
     };
 
@@ -244,11 +275,40 @@ Navigate the labyrinth of grocery lore with humor.`
       this.load.image('cab_onlycans', 'assets/onlycans_cabinet.png');
       this.load.image('cab_blooms', 'assets/blooms_cabinet.png');
       this.load.image('cab_ht', 'assets/ht_cabinet.png');
+      this.load.image('cab_notyourday', 'assets/notyourday_cabinet.png');
+      this.load.image('cab_pro2mussy', 'assets/pro2mussy_cabinet.png');
+      this.load.image('cab_bash', 'assets/bash_cabinet.png');
+      this.load.image('cab_jayf', 'assets/jayf_cabinet.png');
+      this.load.image('cab_ygfs', 'assets/ygfs_cabinet.png');
+
+      // Disco Floor Assets
+      this.load.image('floor_depth', 'assets/floor_depth.png');
+      this.load.image('floor_neon', 'assets/floor_neon.png');
+      this.load.image('floor_grid', 'assets/floor_grid.png');
     }
 
     function create() {
       // 1) Floor grid
-      this.add.grid(0, 0, WORLD_W, WORLD_H, GRID, GRID, 0x000000, 1, 0x23233a, 1).setOrigin(0, 0);
+      // 1) Disco Floor (Parallax Layers)
+      // Layer 1: Depth (Slowest move speed = furthest away)
+      this.bgDepth = this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'floor_depth')
+        .setOrigin(0, 0)
+        .setScrollFactor(0.2)
+        .setDepth(-3);
+
+      // Layer 2: Neon Squares (Middle speed)
+      this.bgNeon = this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'floor_neon')
+        .setOrigin(0, 0)
+        .setScrollFactor(0.6)
+        .setDepth(-2)
+        .setAlpha(0.8);
+
+      // Layer 3: Grid (Fastest/Normal speed = clearly the "floor")
+      this.bgGrid = this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'floor_grid')
+        .setOrigin(0, 0)
+        .setScrollFactor(1)
+        .setDepth(-1)
+        .setAlpha(0.6);
 
       // 2) World bounds (so you can roam)
       this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
@@ -256,9 +316,17 @@ Navigate the labyrinth of grocery lore with humor.`
 
       // 3) Cabinets
       cabinets = this.physics.add.staticGroup();
-      createCabinet(this, cabinets, 400, 300, 'cab_onlycans', 'onlycans', 'OnlyCANs Chronicles');
-      createCabinet(this, cabinets, 600, 300, 'cab_blooms', 'blooms', 'Blooms for Lady');
+      // Row 1
+      createCabinet(this, cabinets, 300, 150, 'cab_notyourday', 'notyourday', 'NOT YOUR DAY');
       createCabinet(this, cabinets, 500, 150, 'cab_ht', 'ht_docs', 'Harris Teeter Docs');
+      createCabinet(this, cabinets, 700, 150, 'cab_blooms', 'blooms', 'Blooms for Lady');
+      createCabinet(this, cabinets, 900, 150, 'cab_onlycans', 'onlycans', 'OnlyCANs Chronicles');
+
+      // Row 2
+      createCabinet(this, cabinets, 300, 450, 'cab_pro2mussy', 'pro2mussy', 'pro2mussy');
+      createCabinet(this, cabinets, 500, 450, 'cab_bash', 'bash', 'OnlyCans: Supermarket Bash');
+      createCabinet(this, cabinets, 700, 450, 'cab_jayf', 'jayf', 'Jay-F Remix');
+      createCabinet(this, cabinets, 900, 450, 'cab_ygfs', 'ygfs', 'Yum Guzzlers From Space');
 
       // 4) Player (spawn where you can see all cabinets)
       player = this.physics.add.sprite(500, 360, 'player');
@@ -442,6 +510,20 @@ Navigate the labyrinth of grocery lore with humor.`
       } else {
         setActiveCabinet(null);
         promptText.setVisible(false);
+      }
+
+      // Animate Disco Floor
+      if (this.bgDepth) {
+        this.bgDepth.tilePositionY += 0.05; // Slow drift
+        this.bgDepth.tilePositionX += 0.02;
+      }
+
+      if (this.bgNeon) {
+        // Color cycle the neon floor
+        const time = this.time.now * 0.0005;
+        const hue = (Math.sin(time) * 360);
+        this.bgNeon.setTint(Phaser.Display.Color.HSLToColor(hue / 360, 1, 0.5).color);
+        this.bgNeon.tilePositionY -= 0.1; // Reverse drift
       }
     }
 
