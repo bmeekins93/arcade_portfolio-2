@@ -157,6 +157,55 @@
       z-index: 3;
       position: relative;
     }
+
+    /* EMBED OVERLAY */
+    #game-embed-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      z-index: 100;
+      flex-direction: column;
+    }
+
+    #embed-iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    #embed-controls {
+      height: 40px;
+      background: #111;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      justify-content: space-between;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+
+    #close-embed-btn {
+      background: transparent;
+      border: 1px solid #0f0;
+      color: #0f0;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-family: inherit;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    #close-embed-btn:hover {
+      background: #0f0;
+      color: #000;
+    }
   </style>
 </head>
 
@@ -175,6 +224,15 @@
         <div id="modal-hint">[E/SPACE: INTERACT • ENTER: LAUNCH • ESC: CLOSE]</div>
       </div>
     </div>
+
+    <!-- EMBED OVERLAY -->
+    <div id="game-embed-overlay">
+      <div id="embed-controls">
+        <span id="embed-title">RUNNING: UNKNOWN</span>
+        <button id="close-embed-btn">RETURN TO ARCADE (ESC)</button>
+      </div>
+      <iframe id="embed-iframe" src=""></iframe>
+    </div>
   </div>
 
   <script>
@@ -185,6 +243,7 @@
       onlycans: {
         title: "OnlyCANs Chronicles",
         url: "https://github.com/bmeekins93/onlycans_chronicles",
+        embedUrl: "games/onlycans_chronicles/index.html",
         text: `A tongue-in-cheek brawler where expired cans fight for pantry supremacy.
 Expect puns and plenty of dented egos.`
       },
@@ -216,6 +275,7 @@ It is sooooooooooooooooooo dumb. You have been warned.`
       bash: {
         title: "OnlyCans: Supermarket Bash",
         url: "https://github.com/bmeekins93/onlycans-supermarket-bash",
+        embedUrl: "games/onlycans_supermarket_bash/index.html",
         text: `The ultimate grocery store showdown.
 Choose your fighter and battle for the last discount item.`
       },
@@ -536,6 +596,13 @@ Coat the invaders in delicious yum to save the planet.`
     const closeBtn = document.getElementById('modal-close');
     const openBtn = document.getElementById('modal-open');
 
+    // Embed UI refs
+    const embedOverlay = document.getElementById('game-embed-overlay');
+    const embedIframe = document.getElementById('embed-iframe');
+    const embedTitle = document.getElementById('embed-title');
+    const closeEmbedBtn = document.getElementById('close-embed-btn');
+    let isEmbedded = false;
+
     let typeTimer = null;
     let audioCtx = null;
     let audioEnabled = true;
@@ -587,9 +654,39 @@ Coat the invaders in delicious yum to save the planet.`
 
       // Small delay prevents immediate re-trigger
       setTimeout(() => {
-        isInputLocked = false;
+        if (!isEmbedded) isInputLocked = false;
       }, 90);
     }
+
+    // EMBED LOGIC
+    function openEmbeddedGame(title, url) {
+      if (!url) return;
+
+      // Close the modal first
+      uiLayer.style.display = 'none';
+      if (typeTimer) clearInterval(typeTimer);
+
+      isEmbedded = true;
+      isInputLocked = true; // Ensure locked
+
+      embedTitle.textContent = "RUNNING: " + title;
+      embedIframe.src = url;
+      embedOverlay.style.display = 'flex';
+    }
+
+    function closeEmbeddedGame() {
+      embedOverlay.style.display = 'none';
+      embedIframe.src = ""; // Stop execution/audio
+      isEmbedded = false;
+
+      // Return control to arcade
+      // Add small delay to prevent immediate movement
+      setTimeout(() => {
+        isInputLocked = false;
+      }, 100);
+    }
+
+    closeEmbedBtn.addEventListener('click', closeEmbeddedGame);
 
     closeBtn.addEventListener('click', closeModal);
 
@@ -600,16 +697,25 @@ Coat the invaders in delicious yum to save the planet.`
 
     window.addEventListener('keydown', (ev) => {
       // ESC closes
-      if (ev.key === 'Escape' && uiLayer.style.display === 'flex') {
-        closeModal();
-        return;
+      if (ev.key === 'Escape') {
+        if (isEmbedded) {
+          closeEmbeddedGame();
+          return;
+        }
+        if (uiLayer.style.display === 'flex') {
+          closeModal();
+          return;
+        }
       }
 
       // ENTER launches (when available)
       if (ev.key === 'Enter' && uiLayer.style.display === 'flex') {
-        if (openBtn.style.pointerEvents !== 'none' && openBtn.href && openBtn.href !== '#') {
-          beep(980, 0.05);
-          window.open(openBtn.href, '_blank', 'noopener');
+        // Check if we can just click the button programmatically
+        if (openBtn.style.pointerEvents !== 'none') {
+          // Intercept if it's an embed project
+          // We can check the href, OR we can check custom data attribute
+          // Best way: Let the click handler handle it, so we simply trigger click
+          openBtn.click();
         }
       }
 
@@ -631,8 +737,22 @@ Coat the invaders in delicious yum to save the planet.`
       modalTitle.textContent = (p.title || "").toUpperCase();
 
       // Link handling
-      if (p.url && p.url.trim().length > 0) {
-        openBtn.href = p.url;
+      // Link handling
+      // Reset listeners (simple way: replace node or just use onclick)
+      openBtn.onclick = (e) => {
+        if (p.embedUrl) {
+          e.preventDefault();
+          beep(980, 0.05);
+          openEmbeddedGame(p.title, p.embedUrl);
+        } else {
+          // Default behavior (link)
+          beep(980, 0.05);
+          // Allow default href action
+        }
+      };
+
+      if ((p.url && p.url.trim().length > 0) || p.embedUrl) {
+        openBtn.href = p.url || "#"; // Fallback to hash if only embedUrl is present
         openBtn.style.opacity = "1";
         openBtn.style.pointerEvents = "auto";
       } else {
