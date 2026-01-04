@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brian's Arcade Portfolio</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+  <style>
+    /* BASE */
+    body {
+      margin: 0;
+      background: #050505;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+
+    /* HUD + SCANLINES */
+    #hud {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      z-index: 5;
+      pointer-events: none;
+      color: rgba(0, 255, 0, 0.78);
+      font-size: 12px;
+      letter-spacing: 0.4px;
+      text-shadow: 0 0 10px rgba(0, 255, 0, 0.25);
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(0, 255, 0, 0.22);
+      padding: 8px 10px;
+      border-radius: 6px;
+    }
+
+    #scanlines {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      opacity: 0.07;
+      background: repeating-linear-gradient(to bottom,
+          rgba(255, 255, 255, 0.0) 0px,
+          rgba(255, 255, 255, 0.0) 2px,
+          rgba(0, 0, 0, 0.55) 3px);
+    }
+
+    /* UI OVERLAY */
+    #ui-layer {
+      display: none;
+      /* hidden by default */
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.65);
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    /* CRT MODAL */
+    .crt {
+      position: relative;
+      background: #000;
+      color: #0f0;
+      border: 4px solid #0f0;
+      padding: 26px 28px 20px;
+      width: 440px;
+      max-width: 85%;
+      box-shadow: 0 0 20px #0f0, inset 0 0 20px rgba(0, 255, 0, 0.2);
+      text-shadow: 0 0 5px #0f0;
+    }
+
+    .crt::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      background-size: 100% 2px, 3px 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    #modal-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed #0f0;
+      padding-bottom: 10px;
+    }
+
+    #modal-content {
+      font-size: 1.05em;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    #modal-close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #0f0;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 3;
+      font-weight: bold;
+    }
+
+    #modal-close:hover {
+      text-shadow: 0 0 10px #fff;
+    }
+
+    #modal-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      z-index: 3;
+      position: relative;
+    }
+
+    #modal-open {
+      display: inline-block;
+      padding: 8px 12px;
+      border: 2px solid #0f0;
+      color: #0f0;
+      text-decoration: none;
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    #modal-open:hover {
+      box-shadow: 0 0 12px rgba(0, 255, 0, 0.6);
+    }
+
+    #modal-hint {
+      margin-top: 16px;
+      font-size: 0.82em;
+      opacity: 0.72;
+      z-index: 3;
+      position: relative;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="game-container">
+    <div id="hud">WASD / Arrows: move • E / Space: interact • Enter: launch • Esc: close</div>
+    <div id="scanlines" aria-hidden="true"></div>
+    <div id="ui-layer">
+      <div id="ui-modal" class="crt">
+        <button id="modal-close" aria-label="Close modal">X</button>
+        <div id="modal-title">PROJECT ACCESS</div>
+        <div id="modal-content">Loading data...</div>
+        <div id="modal-actions">
+          <a id="modal-open" href="#" target="_blank" rel="noopener noreferrer">Launch</a>
+        </div>
+        <div id="modal-hint">[E/SPACE: INTERACT • ENTER: LAUNCH • ESC: CLOSE]</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------
+    // PROJECT DATA (edit URLs later)
+    // -----------------------------
+    const PROJECTS = {
+      onlycans: {
+        title: "OnlyCANs Chronicles",
+        url: "",
+        text: `A tongue-in-cheek brawler where expired cans fight for pantry supremacy.
+Expect puns and plenty of dented egos.`
+      },
+      blooms: {
+        title: "Blooms for Lady",
+        url: "",
+        text: `A floral boutique site with a neon twist.
+Even cyberpunk mercs need to send sarcastic bouquets now and then.`
+      },
+      ht_docs: {
+        title: "Harris Teeter Docs",
+        url: "",
+        text: `Corporate documentation turned into a retro arcade challenge.
+Navigate the labyrinth of grocery lore with humor.`
+      }
+    };
+
+    // -----------------------------
+    // WORLD SETTINGS
+    // -----------------------------
+    const WORLD_W = 2000;
+    const WORLD_H = 2000;
+    const GRID = 32;
+    const INTERACT_RADIUS = 130;
+
+    // -----------------------------
+    // PHASER CONFIG
+    // -----------------------------
+    const config = {
+      type: Phaser.AUTO,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      backgroundColor: '#0b0b14',
+      parent: 'game-container',
+      pixelArt: true,
+      render: { roundPixels: true },
+      physics: {
+        default: 'arcade',
+        arcade: {
+          gravity: { y: 0 },
+          debug: false
+        }
+      },
+      scene: { preload, create, update }
+    };
+
+    const game = new Phaser.Game(config);
+
+    let player, cursors, wasd, cabinets, interactKey, spaceKey;
+    let promptText;
+    let activeCabinet = null;
+    let isInputLocked = false;
+
+    function preload() {
+      // Smaller, downscaled assets (faster load, same vibe)
+      this.load.image('player', 'assets/brian_sprite.png');
+      this.load.image('cab_onlycans', 'assets/onlycans_cabinet.png');
+      this.load.image('cab_blooms', 'assets/blooms_cabinet.png');
+      this.load.image('cab_ht', 'assets/ht_cabinet.png');
+    }
+
+    function create() {
+      // 1) Floor grid
+      this.add.grid(0, 0, WORLD_W, WORLD_H, GRID, GRID, 0x000000, 1, 0x23233a, 1).setOrigin(0, 0);
+
+      // 2) World bounds (so you can roam)
+      this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
+      this.cameras.main.setBounds(0, 0, WORLD_W, WORLD_H);
+
+      // 3) Cabinets
+      cabinets = this.physics.add.staticGroup();
+      createCabinet(this, cabinets, 400, 300, 'cab_onlycans', 'onlycans', 'OnlyCANs Chronicles');
+      createCabinet(this, cabinets, 600, 300, 'cab_blooms', 'blooms', 'Blooms for Lady');
+      createCabinet(this, cabinets, 500, 150, 'cab_ht', 'ht_docs', 'Harris Teeter Docs');
+
+      // 4) Player (spawn where you can see all cabinets)
+      player = this.physics.add.sprite(500, 360, 'player');
+
+      const desiredPlayerHeight = 54;
+      const pImg = this.textures.get('player').getSourceImage();
+      player.setScale(desiredPlayerHeight / pImg.height);
+
+      // Tighter collider so you don't feel like you're bumping invisible air
+      player.body.setSize(player.displayWidth * 0.55, player.displayHeight * 0.75, true);
+      player.body.setOffset(player.displayWidth * 0.225, player.displayHeight * 0.25);
+
+      player.setCollideWorldBounds(true);
+
+      // 5) Camera follow
+      this.cameras.main.startFollow(player, true, 0.12, 0.12);
+      this.cameras.main.setZoom(1.35);
+
+      // 6) Inputs
+      cursors = this.input.keyboard.createCursorKeys();
+      wasd = this.input.keyboard.addKeys('W,A,S,D');
+      interactKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+      spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+      // 7) Collide with cabinets (no auto-open)
+      this.physics.add.collider(player, cabinets);
+
+      // 8) Interaction prompt (appears when near a cabinet)
+      promptText = this.add.text(0, 0, "PRESS E / SPACE", {
+        fontFamily: "Courier New, monospace",
+        fontSize: "14px",
+        color: "#00ff7a",
+        backgroundColor: "rgba(0,0,0,0.55)",
+        padding: { left: 8, right: 8, top: 4, bottom: 4 }
+      })
+        .setOrigin(0.5, 1)
+        .setDepth(10000)
+        .setVisible(false);
+
+      promptText.setShadow(0, 0, "#00ff7a", 10, false, true);
+
+      // Keep scaling/canvas responsive
+      window.addEventListener('resize', () => {
+        this.scale.resize(window.innerWidth, window.innerHeight);
+      });
+    }
+
+    function createCabinet(scene, group, x, y, texture, id, title) {
+      const cab = group.create(x, y, texture);
+
+      // Scale cabinet to a consistent visual height
+      const desiredCabinetHeight = 150;
+      const img = scene.textures.get(texture).getSourceImage();
+      cab.setScale(desiredCabinetHeight / img.height);
+
+      // Depth sort by y (simple top-down layering)
+      cab.setDepth(cab.y);
+
+      cab.setData('id', id);
+      cab.setData('title', title);
+
+      // Shrink cabinet collider to the lower half so the top doesn't block movement
+      cab.refreshBody();
+      if (cab.body) {
+        const bw = cab.displayWidth * 0.62;
+        const bh = cab.displayHeight * 0.42;
+        cab.body.setSize(bw, bh, true);
+        cab.body.setOffset((cab.displayWidth - bw) / 2, cab.displayHeight - bh);
+      }
+
+      // Subtle "interaction ring" that we toggle on/off
+      cab._highlight = scene.add.ellipse(
+        cab.x,
+        cab.y + cab.displayHeight * 0.44,
+        cab.displayWidth * 0.75,
+        cab.displayWidth * 0.26,
+        0x00ff7a,
+        0.16
+      ).setDepth(cab.depth - 1).setVisible(false);
+
+      // Click/tap support: click the cabinet to focus it, click again (or press E) to open
+      cab.setInteractive({ useHandCursor: true });
+      cab.on('pointerdown', () => {
+        if (isInputLocked) return;
+        const d = Phaser.Math.Distance.Between(player.x, player.y, cab.x, cab.y);
+        if (d <= INTERACT_RADIUS) {
+          attemptOpenCabinet(cab);
+        } else {
+          setActiveCabinet(cab);
+        }
+      });
+
+      return cab;
+    }
+
+    function setActiveCabinet(cab) {
+      if (activeCabinet === cab) return;
+
+      if (activeCabinet && activeCabinet._highlight) activeCabinet._highlight.setVisible(false);
+
+      activeCabinet = cab;
+
+      if (activeCabinet && activeCabinet._highlight) activeCabinet._highlight.setVisible(true);
+    }
+
+    function attemptOpenCabinet(cab) {
+      if (!cab || isInputLocked) return;
+
+      const pid = cab.getData('id');
+      const title = cab.getData('title');
+
+      // Dispatch event for DOM UI
+      window.dispatchEvent(new CustomEvent('enter-cabinet', {
+        detail: { id: pid, title }
+      }));
+
+      // Lock movement while modal is open
+      isInputLocked = true;
+      promptText.setVisible(false);
+
+      // Micro push away so you're not glued to the cabinet
+      const dx = player.x - cab.x;
+      const dy = player.y - cab.y;
+      const len = Math.hypot(dx, dy) || 1;
+      player.x += (dx / len) * 10;
+      player.y += (dy / len) * 10;
+      player.body.reset(player.x, player.y);
+    }
+
+    function update() {
+      // Depth sort the player each frame
+      if (player) player.setDepth(player.y);
+
+      // Freeze input while modal open
+      if (isInputLocked) {
+        player.body.setVelocity(0);
+        promptText.setVisible(false);
+        return;
+      }
+
+      // Movement
+      const speed = 230;
+      player.body.setVelocity(0);
+
+      const left = cursors.left.isDown || wasd.A.isDown;
+      const right = cursors.right.isDown || wasd.D.isDown;
+      const up = cursors.up.isDown || wasd.W.isDown;
+      const down = cursors.down.isDown || wasd.S.isDown;
+
+      if (left) player.body.setVelocityX(-speed);
+      if (right) player.body.setVelocityX(speed);
+      if (up) player.body.setVelocityY(-speed);
+      if (down) player.body.setVelocityY(speed);
+
+      player.body.velocity.normalize().scale(speed);
+
+      // Find nearest cabinet in range
+      let nearest = null;
+      let nearestDist = Infinity;
+
+      cabinets.getChildren().forEach((cab) => {
+        const d = Phaser.Math.Distance.Between(player.x, player.y, cab.x, cab.y);
+        if (d < nearestDist) {
+          nearestDist = d;
+          nearest = cab;
+        }
+      });
+
+      if (nearest && nearestDist <= INTERACT_RADIUS) {
+        setActiveCabinet(nearest);
+
+        promptText.setPosition(
+          activeCabinet.x,
+          activeCabinet.y - activeCabinet.displayHeight * 0.53
+        );
+        promptText.setVisible(true);
+
+        if (Phaser.Input.Keyboard.JustDown(interactKey) || Phaser.Input.Keyboard.JustDown(spaceKey)) {
+          attemptOpenCabinet(activeCabinet);
+        }
+      } else {
+        setActiveCabinet(null);
+        promptText.setVisible(false);
+      }
+    }
+
+    // -----------------------------
+    // UI MODAL LOGIC
+    // -----------------------------
+    const uiLayer = document.getElementById('ui-layer');
+    const modalContent = document.getElementById('modal-content');
+    const modalTitle = document.getElementById('modal-title');
+    const closeBtn = document.getElementById('modal-close');
+    const openBtn = document.getElementById('modal-open');
+
+    let typeTimer = null;
+    let audioCtx = null;
+    let audioEnabled = true;
+
+    function beep(freq = 880, duration = 0.07, gain = 0.035) {
+      if (!audioEnabled) return;
+      try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'square';
+        o.frequency.value = freq;
+        g.gain.value = gain;
+
+        o.connect(g);
+        g.connect(audioCtx.destination);
+
+        o.start();
+        o.stop(audioCtx.currentTime + duration);
+      } catch (_) { }
+    }
+
+    function typewrite(text) {
+      if (typeTimer) clearInterval(typeTimer);
+      modalContent.textContent = "";
+      let i = 0;
+
+      typeTimer = setInterval(() => {
+        modalContent.textContent += text[i] || "";
+        i++;
+        if (i >= text.length) {
+          clearInterval(typeTimer);
+          typeTimer = null;
+        }
+      }, 12);
+    }
+
+    function closeModal() {
+      uiLayer.style.display = 'none';
+
+      if (typeTimer) {
+        clearInterval(typeTimer);
+        typeTimer = null;
+      }
+
+      beep(420, 0.06);
+
+      // Small delay prevents immediate re-trigger
+      setTimeout(() => {
+        isInputLocked = false;
+      }, 90);
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+
+    // Click outside the modal closes it
+    uiLayer.addEventListener('mousedown', (ev) => {
+      if (ev.target === uiLayer) closeModal();
+    });
+
+    window.addEventListener('keydown', (ev) => {
+      // ESC closes
+      if (ev.key === 'Escape' && uiLayer.style.display === 'flex') {
+        closeModal();
+        return;
+      }
+
+      // ENTER launches (when available)
+      if (ev.key === 'Enter' && uiLayer.style.display === 'flex') {
+        if (openBtn.style.pointerEvents !== 'none' && openBtn.href && openBtn.href !== '#') {
+          beep(980, 0.05);
+          window.open(openBtn.href, '_blank', 'noopener');
+        }
+      }
+
+      // M toggles audio
+      if (ev.key.toLowerCase() === 'm') {
+        audioEnabled = !audioEnabled;
+      }
+    });
+
+    window.addEventListener('enter-cabinet', (e) => {
+      const projectId = e.detail.id;
+
+      const p = PROJECTS[projectId] || {
+        title: e.detail.title || "UNKNOWN CABINET",
+        url: "",
+        text: "Unknown project: the mystery cabinet whispers insults about your coding habits."
+      };
+
+      modalTitle.textContent = (p.title || "").toUpperCase();
+
+      // Link handling
+      if (p.url && p.url.trim().length > 0) {
+        openBtn.href = p.url;
+        openBtn.style.opacity = "1";
+        openBtn.style.pointerEvents = "auto";
+      } else {
+        openBtn.href = "#";
+        openBtn.style.opacity = "0.35";
+        openBtn.style.pointerEvents = "none";
+      }
+
+      uiLayer.style.display = 'flex';
+      beep(880, 0.06);
+      typewrite(p.text || "");
+    });
+  </script>
+</body>
+
+</html>
