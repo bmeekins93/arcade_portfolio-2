@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OnlyCans Chronicles — David’s Dojo of the Heart</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <div id="app" aria-label="OnlyCans Chronicles game">
+    <video id="bgVideo" loop muted playsinline class="is-hidden"></video>
+    <canvas id="fxCanvas" width="1280" height="720" aria-hidden="true"></canvas>
+
+    <!-- Main Menu -->
+    <section id="mainMenu" class="screen is-active" aria-label="Main menu">
+      <div class="menu-inner">
+        <img id="logo" src="assets/images/logo.png" alt="OnlyCans Chronicles logo" />
+        <div class="menu-buttons">
+          <button id="btnStart" class="btn neon">Start</button>
+          <button id="btnSettings" class="btn">Settings</button>
+          <button id="btnCredits" class="btn">Credits</button>
+        </div>
+        <div class="menu-hint">Tip: Enter to Start • Esc/P to Pause • 1–4 to pick choices</div>
+      </div>
+    </section>
+
+    <!-- Game Screen -->
+    <section id="gameScreen" class="screen" aria-label="Game">
+      <header id="hud">
+        <div class="stat">
+          <div class="stat-label">Respect</div>
+          <div class="stat-bar">
+            <div id="barRespect" class="stat-fill"></div>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Tension</div>
+          <div class="stat-bar">
+            <div id="barTension" class="stat-fill"></div>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Spark</div>
+          <div class="stat-bar">
+            <div id="barSpark" class="stat-fill"></div>
+          </div>
+        </div>
+
+        <button id="btnPause" class="btn tiny" title="Pause (Esc)">Pause</button>
+      </header>
+
+      <div id="scene" role="application" aria-label="Scene">
+        <div id="portraits" aria-hidden="true">
+          <img id="portraitLeft" class="portrait" src="" alt="" />
+          <img id="portraitRight" class="portrait" src="" alt="" />
+        </div>
+
+        <div id="dialogue" aria-label="Dialogue box">
+          <div id="speakerName"></div>
+          <div id="dialogueText"></div>
+          <div id="choices" aria-label="Choices"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pause Overlay -->
+    <section id="pauseOverlay" class="overlay is-hidden" aria-label="Pause menu">
+      <div class="panel">
+        <h2>Paused</h2>
+        <div class="panel-buttons">
+          <button id="btnResume" class="btn neon">Resume</button>
+          <button id="btnPauseSettings" class="btn">Settings</button>
+          <button id="btnMainMenu" class="btn">Main Menu</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings Modal -->
+    <section id="settingsModal" class="overlay is-hidden" aria-label="Settings">
+      <div class="panel">
+        <h2>Settings</h2>
+
+        <div class="settings-grid">
+          <label class="setting">
+            <span>Master Volume</span>
+            <input id="volMaster" type="range" min="0" max="1" step="0.01" />
+          </label>
+
+          <label class="setting">
+            <span>Music Volume</span>
+            <input id="volMusic" type="range" min="0" max="1" step="0.01" />
+          </label>
+
+          <label class="setting">
+            <span>SFX Volume</span>
+            <input id="volSfx" type="range" min="0" max="1" step="0.01" />
+          </label>
+
+          <label class="setting checkbox">
+            <input id="toggleTextSpeed" type="checkbox" />
+            <span>Fast text (typewriter)</span>
+          </label>
+        </div>
+
+        <div class="panel-buttons">
+          <button id="btnCloseSettings" class="btn neon">Close</button>
+        </div>
+
+        <p class="muted small">
+          Audio autoplay is blocked in many browsers until you click/tap. That’s normal. This project ships with
+          placeholder synth MP3s — replace them with your own tracks.
+        </p>
+      </div>
+    </section>
+
+    <!-- Credits Modal -->
+    <section id="creditsModal" class="overlay is-hidden" aria-label="Credits">
+      <div class="panel">
+        <h2>Credits</h2>
+        <p class="small">
+          Built with vanilla HTML/CSS/JS. Art & audio in <code>assets/</code> are placeholders generated for this
+          prototype.
+          Swap in your real PNGs/MP3s without changing the code.
+        </p>
+        <p class="muted small">
+          Controls: Enter/Space to advance • Esc/P pause • 1–4 choose options • Click text to instantly finish the line.
+        </p>
+        <div class="panel-buttons">
+          <button id="btnCloseCredits" class="btn neon">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
+  </div>
+
+  <script src="js/story.js"></script>
+  <script src="js/game.js"></script>
+</body>
+
+</html>
