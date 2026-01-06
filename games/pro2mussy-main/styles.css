@@ -1,0 +1,206 @@
+body {
+  background-color: #f2e8c9;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+}
+
+input[type="text"],
+textarea {
+  padding: 8px;
+  width: 80%;
+  max-width: 300px;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+button {
+  padding: 12px 24px;
+  margin-top: 10px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #eee;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #ddd;
+}
+
+.tos-container {
+  max-height: 200px;
+  overflow-y: scroll;
+  width: 80%;
+  max-width: 500px;
+  background-color: #fff;
+  padding: 15px;
+  border: 1px solid #ccc;
+  margin: 10px 0;
+  text-align: left;
+}
+
+.pop-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.ad-box {
+  background-color: #fff;
+  padding: 30px;
+  max-width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.ad-box h2 {
+  margin-top: 0;
+}
+
+.ad-close {
+  margin-top: 20px;
+  padding: 8px 16px;
+  background-color: #ffcc00;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.try-again {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #007acc;
+  cursor: pointer;
+  text-decoration: underline;
+}
+/* TOS container styling */
+.tos-container {
+  width: 80%;
+  max-width: 500px;
+  height: 200px;
+  overflow-y: auto;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin: 10px auto;
+  white-space: pre-wrap;
+}
+
+/* Glitch animation */
+@keyframes glitch {
+  0% {
+    transform: translate(0,0) scale(1);
+    filter: blur(0);
+  }
+  20% {
+    transform: translate(-5px, 5px) scale(1.02);
+    filter: blur(1px);
+  }
+  40% {
+    transform: translate(5px, -5px) scale(0.98);
+    filter: blur(2px);
+  }
+  60% {
+    transform: translate(-5px, 5px) scale(1.03);
+    filter: blur(1px);
+  }
+  80% {
+    transform: translate(5px, -5px) scale(0.97);
+    filter: blur(2px);
+  }
+  100% {
+    transform: translate(0,0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.glitch {
+  animation: glitch 0.5s;
+}
+
+/* ---------- Friendly Abdul (small, unobtrusive) ---------- */
+.abdul-chat {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 260px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid #d7ccb1;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+  font-size: 12px;
+  color: #333;
+  z-index: 10;
+}
+.abdul-header {
+  padding: 6px 8px;
+  font-weight: 600;
+  background: #f6f0d6;
+  border-bottom: 1px solid #e8dfc1;
+}
+.abdul-body {
+  max-height: 160px;
+  overflow-y: auto;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.abdul-bubble {
+  display: inline-block;
+  padding: 6px 8px;
+  border-radius: 10px;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+.abdul-bubble.bot {
+  background: #f2efde;
+}
+.abdul-bubble.user {
+  background: #e8f3ec;
+  align-self: flex-end;
+}
+.abdul-input {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-top: 1px solid #e8dfc1;
+}
+.abdul-input input {
+  flex: 1;
+  padding: 5px;
+  font-size: 12px;
+}
+.abdul-input button {
+  padding: 5px 8px;
+  font-size: 12px;
+}
+/* sketchy URL that is actually a button */
+.sketchy-link {
+  background: none;
+  border: none;
+  color: #1155cc;
+  text-decoration: underline;
+  padding: 0;
+  cursor: pointer;
+}

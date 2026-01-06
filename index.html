@@ -269,19 +269,21 @@ Press Enter to launch. You were warned.`
       pro2mussy: {
         title: "pro2mussy",
         url: "https://github.com/bmeekins93/pro2mussy",
+        embedUrl: "games/pro2mussy-main/index.html",
         text: `A chaotic experiment in meme-driven development.
 It is sooooooooooooooooooo dumb. You have been warned.`
       },
       bash: {
         title: "OnlyCans: Supermarket Bash",
         url: "https://github.com/bmeekins93/onlycans-supermarket-bash",
-        embedUrl: "games/onlycans_supermarket_bash/index.html",
+        embedUrl: "games/onlycans_supermarket_bash/dist/index.html",
         text: `The ultimate grocery store showdown.
 Choose your fighter and battle for the last discount item.`
       },
       jayf: {
         title: "Jay-F Remix",
         url: "https://github.com/bmeekins93/jayF-durdayup-remix",
+        embedUrl: "games/jayF-durdayup/dist/index.html",
         text: `Drop the beat with this musical remix experiment.
 Rhythm, visualizers, and good vibes only.`
       },
@@ -331,44 +333,28 @@ Coat the invaders in delicious yum to save the planet.`
 
     function preload() {
       // Smaller, downscaled assets (faster load, same vibe)
-      this.load.image('player', 'assets/brian_sprite.png');
-      this.load.image('cab_onlycans', 'assets/onlycans_cabinet.png');
-      this.load.image('cab_blooms', 'assets/blooms_cabinet.png');
-      this.load.image('cab_ht', 'assets/ht_cabinet.png');
-      this.load.image('cab_notyourday', 'assets/notyourday_cabinet.png');
-      this.load.image('cab_pro2mussy', 'assets/pro2mussy_cabinet.png');
-      this.load.image('cab_bash', 'assets/bash_cabinet.png');
-      this.load.image('cab_jayf', 'assets/jayf_cabinet.png');
-      this.load.image('cab_ygfs', 'assets/ygfs_cabinet.png');
+      this.load.image('player', 'assets/brian_sprite.png?v=2');
+      this.load.image('cab_onlycans', 'assets/onlycans_cabinet.png?v=7');
+      this.load.image('cab_blooms', 'assets/blooms_cabinet.png?v=2');
+      this.load.image('cab_ht', 'assets/ht_cabinet.png?v=2');
+      this.load.image('cab_notyourday', 'assets/notyourday_cabinet.png?v=2');
+      this.load.image('cab_pro2mussy', 'assets/pro2mussy_cabinet.png?v=2');
+      this.load.image('cab_bash', 'assets/bash_cabinet.png?v=2');
+      this.load.image('cab_jayf', 'assets/jayf_cabinet.png?v=2');
+      this.load.image('cab_ygfs', 'assets/ygfs_cabinet.png?v=2');
 
-      // Disco Floor Assets
-      this.load.image('floor_depth', 'assets/floor_depth.png');
-      this.load.image('floor_neon', 'assets/floor_neon.png');
-      this.load.image('floor_grid', 'assets/floor_grid.png');
+      // Basketball Court Background
+      this.load.image('basketball_court', 'assets/basketball_court.jpg');
+
+      // Audio
+      this.load.audio('bgm', 'assets/Pats MUST tardedlove.mp3');
     }
 
     function create() {
-      // 1) Floor grid
-      // 1) Disco Floor (Parallax Layers)
-      // Layer 1: Depth (Slowest move speed = furthest away)
-      this.bgDepth = this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'floor_depth')
+      // 1) Basketball Court Background
+      this.bgCourt = this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'basketball_court')
         .setOrigin(0, 0)
-        .setScrollFactor(0.2)
         .setDepth(-3);
-
-      // Layer 2: Neon Squares (Middle speed)
-      this.bgNeon = this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'floor_neon')
-        .setOrigin(0, 0)
-        .setScrollFactor(0.6)
-        .setDepth(-2)
-        .setAlpha(0.8);
-
-      // Layer 3: Grid (Fastest/Normal speed = clearly the "floor")
-      this.bgGrid = this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'floor_grid')
-        .setOrigin(0, 0)
-        .setScrollFactor(1)
-        .setDepth(-1)
-        .setAlpha(0.6);
 
       // 2) World bounds (so you can roam)
       this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
@@ -428,9 +414,27 @@ Coat the invaders in delicious yum to save the planet.`
 
       promptText.setShadow(0, 0, "#00ff7a", 10, false, true);
 
+      // 9) Background Music
+      this.sound.pauseOnBlur = false;
+      const bgm = this.sound.add('bgm', {
+        loop: true,
+        volume: 0.4
+      });
+      // Try to play immediately (browser autoplay policy might block this until interaction)
+      bgm.play();
+
+      this.registry.set('bgm', bgm);
+
       // Keep scaling/canvas responsive
       window.addEventListener('resize', () => {
         this.scale.resize(window.innerWidth, window.innerHeight);
+      });
+
+      // Global click listener to resume context if blocked
+      this.input.on('pointerdown', () => {
+        if (this.sound.context.state === 'suspended') {
+          this.sound.context.resume();
+        }
       });
     }
 
@@ -571,20 +575,6 @@ Coat the invaders in delicious yum to save the planet.`
         setActiveCabinet(null);
         promptText.setVisible(false);
       }
-
-      // Animate Disco Floor
-      if (this.bgDepth) {
-        this.bgDepth.tilePositionY += 0.05; // Slow drift
-        this.bgDepth.tilePositionX += 0.02;
-      }
-
-      if (this.bgNeon) {
-        // Color cycle the neon floor
-        const time = this.time.now * 0.0005;
-        const hue = (Math.sin(time) * 360);
-        this.bgNeon.setTint(Phaser.Display.Color.HSLToColor(hue / 360, 1, 0.5).color);
-        this.bgNeon.tilePositionY -= 0.1; // Reverse drift
-      }
     }
 
     // -----------------------------
@@ -602,6 +592,14 @@ Coat the invaders in delicious yum to save the planet.`
     const embedTitle = document.getElementById('embed-title');
     const closeEmbedBtn = document.getElementById('close-embed-btn');
     let isEmbedded = false;
+
+    // We'll access the BGM via the Phaser game instance
+    function getBGM() {
+      if (game && game.registry) {
+        return game.registry.get('bgm');
+      }
+      return null;
+    }
 
     let typeTimer = null;
     let audioCtx = null;
@@ -672,12 +670,24 @@ Coat the invaders in delicious yum to save the planet.`
       embedTitle.textContent = "RUNNING: " + title;
       embedIframe.src = url;
       embedOverlay.style.display = 'flex';
+
+      // Pause arcade BGM
+      const bgm = getBGM();
+      if (bgm && bgm.isPlaying) {
+        bgm.pause();
+      }
     }
 
     function closeEmbeddedGame() {
       embedOverlay.style.display = 'none';
       embedIframe.src = ""; // Stop execution/audio
       isEmbedded = false;
+
+      // Resume arcade BGM
+      const bgm = getBGM();
+      if (bgm && bgm.isPaused && audioEnabled) {
+        bgm.resume();
+      }
 
       // Return control to arcade
       // Add small delay to prevent immediate movement
@@ -722,6 +732,15 @@ Coat the invaders in delicious yum to save the planet.`
       // M toggles audio
       if (ev.key.toLowerCase() === 'm') {
         audioEnabled = !audioEnabled;
+        const bgm = getBGM();
+        if (bgm) {
+          // If we are embedded, don't resume, just update state tracking
+          if (!audioEnabled) {
+            bgm.mute = true;
+          } else {
+            bgm.mute = false;
+          }
+        }
       }
     });
 
