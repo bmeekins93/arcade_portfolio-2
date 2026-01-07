@@ -298,10 +298,10 @@ Coat the invaders in delicious yum to save the planet.`
     // -----------------------------
     // WORLD SETTINGS
     // -----------------------------
-    const WORLD_W = 2000;
-    const WORLD_H = 2000;
+    const WORLD_W = 2150;
+    const WORLD_H = 1434;
     const GRID = 32;
-    const INTERACT_RADIUS = 130;
+    const INTERACT_RADIUS = 260;
 
     // -----------------------------
     // PHASER CONFIG
@@ -344,7 +344,7 @@ Coat the invaders in delicious yum to save the planet.`
       this.load.image('cab_ygfs', 'assets/ygfs_cabinet.png?v=2');
 
       // Basketball Court Background
-      this.load.image('basketball_court', 'assets/basketball_court.jpg');
+      this.load.image('bg_court', 'assets/Bball_crt_background.png');
 
       // Audio
       this.load.audio('bgm', 'assets/Pats MUST tardedlove.mp3');
@@ -352,9 +352,12 @@ Coat the invaders in delicious yum to save the planet.`
 
     function create() {
       // 1) Basketball Court Background
-      this.bgCourt = this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'basketball_court')
+      this.bgCourt = this.add.image(0, 0, 'bg_court')
         .setOrigin(0, 0)
         .setDepth(-3);
+
+      this.bgCourt.displayWidth = WORLD_W;
+      this.bgCourt.displayHeight = WORLD_H;
 
       // 2) World bounds (so you can roam)
       this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
@@ -362,22 +365,27 @@ Coat the invaders in delicious yum to save the planet.`
 
       // 3) Cabinets
       cabinets = this.physics.add.staticGroup();
-      // Row 1
-      createCabinet(this, cabinets, 300, 150, 'cab_notyourday', 'notyourday', 'NOT YOUR DAY');
-      createCabinet(this, cabinets, 500, 150, 'cab_ht', 'ht_docs', 'Harris Teeter Docs');
-      createCabinet(this, cabinets, 700, 150, 'cab_blooms', 'blooms', 'Blooms for Lady');
-      createCabinet(this, cabinets, 900, 150, 'cab_onlycans', 'onlycans', 'OnlyCANs Chronicles');
 
-      // Row 2
-      createCabinet(this, cabinets, 300, 450, 'cab_pro2mussy', 'pro2mussy', 'pro2mussy');
-      createCabinet(this, cabinets, 500, 450, 'cab_bash', 'bash', 'OnlyCans: Supermarket Bash');
-      createCabinet(this, cabinets, 700, 450, 'cab_jayf', 'jayf', 'Jay-F Remix');
-      createCabinet(this, cabinets, 900, 450, 'cab_ygfs', 'ygfs', 'Yum Guzzlers From Space');
+      // -- PAIR 1: Top Left Sideline --
+      createCabinet(this, cabinets, 420, 280, 'cab_notyourday', 'notyourday', 'NOT YOUR DAY');
+      createCabinet(this, cabinets, 630, 280, 'cab_ht', 'ht_docs', 'Harris Teeter Docs');
 
-      // 4) Player (spawn where you can see all cabinets)
-      player = this.physics.add.sprite(500, 360, 'player');
+      // -- PAIR 2: Top Right Sideline --
+      createCabinet(this, cabinets, 1470, 280, 'cab_blooms', 'blooms', 'Blooms for Lady');
+      createCabinet(this, cabinets, 1680, 280, 'cab_onlycans', 'onlycans', 'OnlyCANs Chronicles');
 
-      const desiredPlayerHeight = 54;
+      // -- PAIR 3: Bottom Left Sideline --
+      createCabinet(this, cabinets, 420, 1120, 'cab_pro2mussy', 'pro2mussy', 'pro2mussy');
+      createCabinet(this, cabinets, 630, 1120, 'cab_bash', 'bash', 'OnlyCans: Supermarket Bash');
+
+      // -- PAIR 4: Bottom Right Sideline --
+      createCabinet(this, cabinets, 1470, 1120, 'cab_jayf', 'jayf', 'Jay-F Remix');
+      createCabinet(this, cabinets, 1680, 1120, 'cab_ygfs', 'ygfs', 'Yum Guzzlers From Space');
+
+      // 4) Player
+      player = this.physics.add.sprite(1050, 700, 'player');
+
+      const desiredPlayerHeight = 220;
       const pImg = this.textures.get('player').getSourceImage();
       player.setScale(desiredPlayerHeight / pImg.height);
 
@@ -389,7 +397,7 @@ Coat the invaders in delicious yum to save the planet.`
 
       // 5) Camera follow
       this.cameras.main.startFollow(player, true, 0.12, 0.12);
-      this.cameras.main.setZoom(1.35);
+      this.cameras.main.setZoom(1.0);
 
       // 6) Inputs
       cursors = this.input.keyboard.createCursorKeys();
@@ -442,7 +450,7 @@ Coat the invaders in delicious yum to save the planet.`
       const cab = group.create(x, y, texture);
 
       // Scale cabinet to a consistent visual height
-      const desiredCabinetHeight = 150;
+      const desiredCabinetHeight = 300;
       const img = scene.textures.get(texture).getSourceImage();
       cab.setScale(desiredCabinetHeight / img.height);
 
@@ -532,7 +540,7 @@ Coat the invaders in delicious yum to save the planet.`
       }
 
       // Movement
-      const speed = 230;
+      const speed = 460;
       player.body.setVelocity(0);
 
       const left = cursors.left.isDown || wasd.A.isDown;
