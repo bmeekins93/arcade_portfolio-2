@@ -481,6 +481,7 @@ Coat the invaders in delicious yum to save the planet.`
     let touchVector = { x: 0, y: 0 };
     let touchMagnitude = 0;
     let joystickPointerId = null;
+    let isJoystickActive = false;
     let joystickCenter = { x: 0, y: 0 };
     let joystickRadius = 0;
     const promptLabel = isTouchDevice ? "PRESS A" : "PRESS E / SPACE";
@@ -497,6 +498,22 @@ Coat the invaders in delicious yum to save the planet.`
 
     function isInputBlocked() {
       return isInputLocked || isOrientationBlocked;
+    }
+
+    function getPointerId(eventLike) {
+      if (!eventLike) return null;
+      if (typeof eventLike.pointerId === 'number') return eventLike.pointerId;
+      if (typeof eventLike.id === 'number') return eventLike.id;
+      if (typeof eventLike.identifier === 'number') return eventLike.identifier;
+      return null;
+    }
+
+    function isJoystickPointer(pointer) {
+      if (!isTouchDevice || !isJoystickActive) return false;
+      if (joystickPointerId === null) return true;
+      const pid = getPointerId(pointer);
+      if (pid === null) return true;
+      return pid === joystickPointerId;
     }
 
     function updateInputHints() {
@@ -583,23 +600,35 @@ Coat the invaders in delicious yum to save the planet.`
     if (isTouchDevice && joystickBase) {
       joystickBase.addEventListener('pointerdown', (ev) => {
         ev.preventDefault();
+        ev.stopPropagation();
         if (isInputBlocked()) return;
-        joystickPointerId = ev.pointerId;
-        joystickBase.setPointerCapture(ev.pointerId);
+        const pid = getPointerId(ev);
+        joystickPointerId = pid;
+        isJoystickActive = true;
+        if (typeof pid === 'number' && joystickBase.setPointerCapture) {
+          joystickBase.setPointerCapture(pid);
+        }
         updateJoystick(ev.clientX, ev.clientY);
       });
 
       joystickBase.addEventListener('pointermove', (ev) => {
-        if (ev.pointerId !== joystickPointerId) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        const pid = getPointerId(ev);
+        if (joystickPointerId !== null && pid !== joystickPointerId) return;
         updateJoystick(ev.clientX, ev.clientY);
       });
 
       const endJoystick = (ev) => {
-        if (ev.pointerId !== joystickPointerId) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        const pid = getPointerId(ev);
+        if (joystickPointerId !== null && pid !== joystickPointerId) return;
         joystickPointerId = null;
+        isJoystickActive = false;
         resetJoystick();
-        if (joystickBase.hasPointerCapture && joystickBase.hasPointerCapture(ev.pointerId)) {
-          joystickBase.releasePointerCapture(ev.pointerId);
+        if (typeof pid === 'number' && joystickBase.hasPointerCapture && joystickBase.hasPointerCapture(pid)) {
+          joystickBase.releasePointerCapture(pid);
         }
       };
 
@@ -779,8 +808,9 @@ Coat the invaders in delicious yum to save the planet.`
 
       // Click/tap support: click the cabinet to focus it, click again (or press E) to open
       cab.setInteractive({ useHandCursor: true });
-      cab.on('pointerdown', () => {
+      cab.on('pointerdown', (pointer) => {
         if (isInputBlocked()) return;
+        if (isJoystickPointer(pointer)) return;
         const d = Phaser.Math.Distance.Between(player.x, player.y, cab.x, cab.y);
         if (d <= interactRadius) {
           attemptOpenCabinet(cab);
