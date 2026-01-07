@@ -7,36 +7,57 @@
   <title>Brian's Arcade Portfolio</title>
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
   <style>
+    :root {
+      --hud-font: clamp(11px, 1.6vw, 14px);
+      --modal-font: clamp(14px, 2.1vw, 18px);
+      --touch-size: clamp(92px, 18vw, 150px);
+      --touch-knob: clamp(40px, 8vw, 68px);
+      --touch-gap: clamp(12px, 3vw, 26px);
+      --action-size: clamp(64px, 12vw, 110px);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     /* BASE */
     body {
       margin: 0;
       background: #050505;
       overflow: hidden;
       font-family: 'Courier New', monospace;
+      height: 100svh;
+      height: 100dvh;
+      touch-action: none;
+      user-select: none;
     }
 
     #game-container {
       position: relative;
       width: 100vw;
-      height: 100vh;
+      height: 100svh;
+      height: 100dvh;
+      touch-action: none;
     }
 
 
     /* HUD + SCANLINES */
     #hud {
       position: absolute;
-      left: 12px;
-      bottom: 12px;
+      left: max(12px, env(safe-area-inset-left));
+      bottom: max(12px, env(safe-area-inset-bottom));
       z-index: 5;
       pointer-events: none;
       color: rgba(0, 255, 0, 0.78);
-      font-size: 12px;
+      font-size: var(--hud-font);
       letter-spacing: 0.4px;
       text-shadow: 0 0 10px rgba(0, 255, 0, 0.25);
       background: rgba(0, 0, 0, 0.35);
       border: 1px solid rgba(0, 255, 0, 0.22);
       padding: 8px 10px;
       border-radius: 6px;
+      max-width: 70vw;
+      line-height: 1.4;
     }
 
     #scanlines {
@@ -73,10 +94,13 @@
       color: #0f0;
       border: 4px solid #0f0;
       padding: 26px 28px 20px;
-      width: 440px;
+      width: min(440px, 92vw);
       max-width: 85%;
       box-shadow: 0 0 20px #0f0, inset 0 0 20px rgba(0, 255, 0, 0.2);
       text-shadow: 0 0 5px #0f0;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
     }
 
     .crt::after {
@@ -104,9 +128,12 @@
     }
 
     #modal-content {
-      font-size: 1.05em;
+      font-size: var(--modal-font);
       line-height: 1.5;
       white-space: pre-wrap;
+      overflow-y: auto;
+      flex: 1;
+      padding-right: 6px;
     }
 
     #modal-close {
@@ -116,7 +143,7 @@
       background: none;
       border: none;
       color: #0f0;
-      font-size: 20px;
+      font-size: 22px;
       cursor: pointer;
       z-index: 3;
       font-weight: bold;
@@ -133,6 +160,7 @@
       align-items: center;
       z-index: 3;
       position: relative;
+      flex-wrap: wrap;
     }
 
     #modal-open {
@@ -179,23 +207,26 @@
     }
 
     #embed-controls {
-      height: 40px;
+      min-height: clamp(44px, 6vh, 64px);
       background: #111;
       border-bottom: 1px solid #333;
       display: flex;
       align-items: center;
-      padding: 0 20px;
+      padding-top: max(6px, env(safe-area-inset-top));
+      padding-bottom: 6px;
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(12px, env(safe-area-inset-right));
       justify-content: space-between;
       color: #0f0;
       font-family: 'Courier New', monospace;
-      font-size: 14px;
+      font-size: clamp(12px, 2vw, 14px);
     }
 
     #close-embed-btn {
       background: transparent;
       border: 1px solid #0f0;
       color: #0f0;
-      padding: 4px 12px;
+      padding: 6px 14px;
       cursor: pointer;
       font-family: inherit;
       text-transform: uppercase;
@@ -205,6 +236,104 @@
     #close-embed-btn:hover {
       background: #0f0;
       color: #000;
+    }
+
+    /* TOUCH CONTROLS */
+    #touch-controls {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-top: 0;
+      padding-bottom: calc(var(--touch-gap) + env(safe-area-inset-bottom));
+      padding-left: max(var(--touch-gap), env(safe-area-inset-left));
+      padding-right: max(var(--touch-gap), env(safe-area-inset-right));
+      pointer-events: none;
+    }
+
+    body.touch #touch-controls {
+      display: flex;
+    }
+
+    #joystick-base {
+      width: var(--touch-size);
+      height: var(--touch-size);
+      border-radius: 999px;
+      border: 2px solid rgba(0, 255, 0, 0.6);
+      background: transparent;
+      position: relative;
+      pointer-events: auto;
+      touch-action: none;
+      box-shadow: 0 0 14px rgba(0, 255, 0, 0.25);
+    }
+
+    #joystick-knob {
+      width: var(--touch-knob);
+      height: var(--touch-knob);
+      border-radius: 999px;
+      background: transparent;
+      border: 2px solid rgba(0, 255, 0, 0.9);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 12px rgba(0, 255, 0, 0.35);
+      pointer-events: none;
+    }
+
+    #action-button {
+      width: var(--action-size);
+      height: var(--action-size);
+      border-radius: 999px;
+      border: 2px solid rgba(0, 255, 0, 0.9);
+      background: transparent;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      letter-spacing: 2px;
+      font-size: clamp(16px, 3vw, 24px);
+      box-shadow: 0 0 16px rgba(0, 255, 0, 0.35);
+      pointer-events: auto;
+      touch-action: none;
+    }
+
+    #action-button:active {
+      transform: scale(0.96);
+      box-shadow: 0 0 22px rgba(0, 255, 0, 0.6);
+    }
+
+    /* ORIENTATION LOCK */
+    #rotate-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      background: rgba(0, 0, 0, 0.86);
+      color: #0f0;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(16px, 3.2vw, 22px);
+      letter-spacing: 1px;
+      padding: 20px;
+    }
+
+    body.portrait #rotate-overlay {
+      display: flex;
+    }
+
+    body.portrait #touch-controls {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      #hud {
+        left: 8px;
+        bottom: 8px;
+        padding: 6px 8px;
+      }
     }
   </style>
 </head>
@@ -224,6 +353,17 @@
         <div id="modal-hint">[E/SPACE: INTERACT • ENTER: LAUNCH • ESC: CLOSE]</div>
       </div>
     </div>
+
+    <!-- TOUCH CONTROLS -->
+    <div id="touch-controls" aria-hidden="true">
+      <div id="joystick-base">
+        <div id="joystick-knob"></div>
+      </div>
+      <button id="action-button" type="button" aria-label="Interact">A</button>
+    </div>
+
+    <!-- ROTATE OVERLAY -->
+    <div id="rotate-overlay" aria-live="polite">ROTATE DEVICE TO LANDSCAPE</div>
 
     <!-- EMBED OVERLAY -->
     <div id="game-embed-overlay">
@@ -297,13 +437,17 @@ Coat the invaders in delicious yum to save the planet.`
       }
     };
 
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    document.body.classList.toggle('touch', isTouchDevice);
+
     // -----------------------------
     // WORLD SETTINGS
     // -----------------------------
     const WORLD_W = 2150;
     const WORLD_H = 1434;
     const GRID = 32;
-    const INTERACT_RADIUS = 260;
+    const BASE_INTERACT_RADIUS = 260;
+    let interactRadius = BASE_INTERACT_RADIUS;
 
     // -----------------------------
     // PHASER CONFIG
@@ -314,6 +458,7 @@ Coat the invaders in delicious yum to save the planet.`
       height: window.innerHeight,
       backgroundColor: '#0b0b14',
       parent: 'game-container',
+      scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_BOTH },
       pixelArt: true,
       render: { roundPixels: true },
       physics: {
@@ -332,6 +477,173 @@ Coat the invaders in delicious yum to save the planet.`
     let promptText;
     let activeCabinet = null;
     let isInputLocked = false;
+    let isOrientationBlocked = false;
+    let touchVector = { x: 0, y: 0 };
+    let touchMagnitude = 0;
+    let joystickPointerId = null;
+    let isJoystickActive = false;
+    let joystickCenter = { x: 0, y: 0 };
+    let joystickRadius = 0;
+    const promptLabel = isTouchDevice ? "PRESS A" : "PRESS E / SPACE";
+    if (isTouchDevice) {
+      interactRadius = 320;
+    }
+    const hud = document.getElementById('hud');
+    const modalHint = document.getElementById('modal-hint');
+    const touchControls = document.getElementById('touch-controls');
+    const joystickBase = document.getElementById('joystick-base');
+    const joystickKnob = document.getElementById('joystick-knob');
+    const actionButton = document.getElementById('action-button');
+    const rotateOverlay = document.getElementById('rotate-overlay');
+
+    function isInputBlocked() {
+      return isInputLocked || isOrientationBlocked;
+    }
+
+    function getPointerId(eventLike) {
+      if (!eventLike) return null;
+      if (typeof eventLike.pointerId === 'number') return eventLike.pointerId;
+      if (typeof eventLike.id === 'number') return eventLike.id;
+      if (typeof eventLike.identifier === 'number') return eventLike.identifier;
+      return null;
+    }
+
+    function isJoystickPointer(pointer) {
+      if (!isTouchDevice || !isJoystickActive) return false;
+      if (joystickPointerId === null) return true;
+      const pid = getPointerId(pointer);
+      if (pid === null) return true;
+      return pid === joystickPointerId;
+    }
+
+    function updateInputHints() {
+      if (hud) {
+        hud.textContent = isTouchDevice
+          ? "JOYSTICK: MOVE • A: INTERACT • TAP CABINET: FOCUS"
+          : "WASD / Arrows: move • E / Space: interact • Enter: launch • Esc: close";
+      }
+      if (modalHint) {
+        modalHint.textContent = isTouchDevice
+          ? "[A: INTERACT • ENTER: LAUNCH • TAP X: CLOSE]"
+          : "[E/SPACE: INTERACT • ENTER: LAUNCH • ESC: CLOSE]";
+      }
+    }
+
+    function updateOrientationLock() {
+      const isPortrait = window.innerHeight > window.innerWidth;
+      isOrientationBlocked = isTouchDevice && isPortrait;
+      document.body.classList.toggle('portrait', isOrientationBlocked);
+      if (rotateOverlay) {
+        rotateOverlay.setAttribute('aria-hidden', isOrientationBlocked ? "false" : "true");
+      }
+    }
+
+    function getResponsiveZoom() {
+      const minDim = Math.min(window.innerWidth, window.innerHeight);
+      if (minDim < 560) return 1.35;
+      if (minDim < 820) return 1.2;
+      if (minDim < 1100) return 1.1;
+      return 1.0;
+    }
+
+    function applyResponsiveCamera(scene) {
+      if (!scene || !scene.cameras || !scene.cameras.main) return;
+      scene.cameras.main.setZoom(getResponsiveZoom());
+    }
+
+    function resetJoystick() {
+      if (!joystickKnob) return;
+      joystickKnob.style.transform = "translate(-50%, -50%)";
+      touchVector = { x: 0, y: 0 };
+      touchMagnitude = 0;
+    }
+
+    function updateJoystickLayout() {
+      if (!joystickBase) return;
+      const rect = joystickBase.getBoundingClientRect();
+      joystickCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      joystickRadius = rect.width / 2;
+      resetJoystick();
+    }
+
+    function updateJoystick(clientX, clientY) {
+      if (!joystickBase || !joystickKnob) return;
+      const dx = clientX - joystickCenter.x;
+      const dy = clientY - joystickCenter.y;
+      const dist = Math.hypot(dx, dy);
+      const max = joystickRadius * 0.6;
+      const clamped = Math.min(dist, max);
+      const angle = Math.atan2(dy, dx);
+      const offsetX = Math.cos(angle) * clamped;
+      const offsetY = Math.sin(angle) * clamped;
+
+      joystickKnob.style.transform =
+        "translate(calc(-50% + " + offsetX + "px), calc(-50% + " + offsetY + "px))";
+
+      if (dist > 0 && max > 0) {
+        touchVector.x = dx / dist;
+        touchVector.y = dy / dist;
+        touchMagnitude = Math.min(dist / max, 1);
+      } else {
+        touchVector.x = 0;
+        touchVector.y = 0;
+        touchMagnitude = 0;
+      }
+    }
+
+    updateInputHints();
+    updateOrientationLock();
+    if (touchControls) {
+      touchControls.setAttribute('aria-hidden', isTouchDevice ? "false" : "true");
+    }
+
+    if (isTouchDevice && joystickBase) {
+      joystickBase.addEventListener('pointerdown', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (isInputBlocked()) return;
+        const pid = getPointerId(ev);
+        joystickPointerId = pid;
+        isJoystickActive = true;
+        if (typeof pid === 'number' && joystickBase.setPointerCapture) {
+          joystickBase.setPointerCapture(pid);
+        }
+        updateJoystick(ev.clientX, ev.clientY);
+      });
+
+      joystickBase.addEventListener('pointermove', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const pid = getPointerId(ev);
+        if (joystickPointerId !== null && pid !== joystickPointerId) return;
+        updateJoystick(ev.clientX, ev.clientY);
+      });
+
+      const endJoystick = (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const pid = getPointerId(ev);
+        if (joystickPointerId !== null && pid !== joystickPointerId) return;
+        joystickPointerId = null;
+        isJoystickActive = false;
+        resetJoystick();
+        if (typeof pid === 'number' && joystickBase.hasPointerCapture && joystickBase.hasPointerCapture(pid)) {
+          joystickBase.releasePointerCapture(pid);
+        }
+      };
+
+      joystickBase.addEventListener('pointerup', endJoystick);
+      joystickBase.addEventListener('pointercancel', endJoystick);
+      joystickBase.addEventListener('pointerleave', endJoystick);
+    }
+
+    if (isTouchDevice && actionButton) {
+      actionButton.addEventListener('pointerdown', (ev) => {
+        ev.preventDefault();
+        if (isInputBlocked()) return;
+        triggerInteract();
+      });
+    }
 
     function preload() {
       // Smaller, downscaled assets (faster load, same vibe)
@@ -342,7 +654,7 @@ Coat the invaders in delicious yum to save the planet.`
       this.load.image('cab_notyourday', 'assets/notyourday_cabinet.png?v=2');
       this.load.image('cab_pro2mussy', 'assets/pro2mussy_cabinet.png?v=2');
       this.load.image('cab_bash', 'assets/bash_cabinet.png?v=2');
-      this.load.image('cab_jayf', 'assets/jayf_cabinet.png?v=2');
+      this.load.image('cab_jayf', 'assets/jayf_cabinet.png?v=4');
       this.load.image('cab_ygfs', 'assets/ygfs_cabinet.png?v=2');
 
       // Basketball Court Background
@@ -399,7 +711,7 @@ Coat the invaders in delicious yum to save the planet.`
 
       // 5) Camera follow
       this.cameras.main.startFollow(player, true, 0.12, 0.12);
-      this.cameras.main.setZoom(1.0);
+      applyResponsiveCamera(this);
 
       // 6) Inputs
       cursors = this.input.keyboard.createCursorKeys();
@@ -411,9 +723,9 @@ Coat the invaders in delicious yum to save the planet.`
       this.physics.add.collider(player, cabinets);
 
       // 8) Interaction prompt (appears when near a cabinet)
-      promptText = this.add.text(0, 0, "PRESS E / SPACE", {
+      promptText = this.add.text(0, 0, promptLabel, {
         fontFamily: "Courier New, monospace",
-        fontSize: "14px",
+        fontSize: isTouchDevice ? "16px" : "14px",
         color: "#00ff7a",
         backgroundColor: "rgba(0,0,0,0.55)",
         padding: { left: 8, right: 8, top: 4, bottom: 4 }
@@ -423,6 +735,9 @@ Coat the invaders in delicious yum to save the planet.`
         .setVisible(false);
 
       promptText.setShadow(0, 0, "#00ff7a", 10, false, true);
+
+      updateOrientationLock();
+      updateJoystickLayout();
 
       // 9) Background Music
       this.sound.pauseOnBlur = false;
@@ -438,6 +753,16 @@ Coat the invaders in delicious yum to save the planet.`
       // Keep scaling/canvas responsive
       window.addEventListener('resize', () => {
         this.scale.resize(window.innerWidth, window.innerHeight);
+        applyResponsiveCamera(this);
+        updateOrientationLock();
+        updateJoystickLayout();
+      });
+
+      window.addEventListener('orientationchange', () => {
+        this.scale.resize(window.innerWidth, window.innerHeight);
+        applyResponsiveCamera(this);
+        updateOrientationLock();
+        updateJoystickLayout();
       });
 
       // Global click listener to resume context if blocked
@@ -483,10 +808,11 @@ Coat the invaders in delicious yum to save the planet.`
 
       // Click/tap support: click the cabinet to focus it, click again (or press E) to open
       cab.setInteractive({ useHandCursor: true });
-      cab.on('pointerdown', () => {
-        if (isInputLocked) return;
+      cab.on('pointerdown', (pointer) => {
+        if (isInputBlocked()) return;
+        if (isJoystickPointer(pointer)) return;
         const d = Phaser.Math.Distance.Between(player.x, player.y, cab.x, cab.y);
-        if (d <= INTERACT_RADIUS) {
+        if (d <= interactRadius) {
           attemptOpenCabinet(cab);
         } else {
           setActiveCabinet(cab);
@@ -507,7 +833,7 @@ Coat the invaders in delicious yum to save the planet.`
     }
 
     function attemptOpenCabinet(cab) {
-      if (!cab || isInputLocked) return;
+      if (!cab || isInputBlocked()) return;
 
       const pid = cab.getData('id');
       const title = cab.getData('title');
@@ -535,7 +861,7 @@ Coat the invaders in delicious yum to save the planet.`
       if (player) player.setDepth(player.y);
 
       // Freeze input while modal open
-      if (isInputLocked) {
+      if (isInputBlocked()) {
         player.body.setVelocity(0);
         promptText.setVisible(false);
         return;
@@ -550,12 +876,24 @@ Coat the invaders in delicious yum to save the planet.`
       const up = cursors.up.isDown || wasd.W.isDown;
       const down = cursors.down.isDown || wasd.S.isDown;
 
-      if (left) player.body.setVelocityX(-speed);
-      if (right) player.body.setVelocityX(speed);
-      if (up) player.body.setVelocityY(-speed);
-      if (down) player.body.setVelocityY(speed);
+      const usingKeyboard = left || right || up || down;
+      let vx = 0;
+      let vy = 0;
 
-      player.body.velocity.normalize().scale(speed);
+      if (usingKeyboard) {
+        if (left) vx -= 1;
+        if (right) vx += 1;
+        if (up) vy -= 1;
+        if (down) vy += 1;
+      } else if (isTouchDevice && touchMagnitude > 0) {
+        vx = touchVector.x * touchMagnitude;
+        vy = touchVector.y * touchMagnitude;
+      }
+
+      if (vx !== 0 || vy !== 0) {
+        const len = Math.hypot(vx, vy) || 1;
+        player.body.setVelocity((vx / len) * speed, (vy / len) * speed);
+      }
 
       // Find nearest cabinet in range
       let nearest = null;
@@ -569,7 +907,7 @@ Coat the invaders in delicious yum to save the planet.`
         }
       });
 
-      if (nearest && nearestDist <= INTERACT_RADIUS) {
+      if (nearest && nearestDist <= interactRadius) {
         setActiveCabinet(nearest);
 
         promptText.setPosition(
@@ -585,6 +923,29 @@ Coat the invaders in delicious yum to save the planet.`
         setActiveCabinet(null);
         promptText.setVisible(false);
       }
+    }
+
+    function getNearestCabinetInRange() {
+      if (!cabinets || !player) return null;
+      let nearest = null;
+      let nearestDist = Infinity;
+
+      cabinets.getChildren().forEach((cab) => {
+        const d = Phaser.Math.Distance.Between(player.x, player.y, cab.x, cab.y);
+        if (d < nearestDist) {
+          nearestDist = d;
+          nearest = cab;
+        }
+      });
+
+      if (nearest && nearestDist <= interactRadius) return nearest;
+      return null;
+    }
+
+    function triggerInteract() {
+      if (isInputBlocked()) return;
+      const target = activeCabinet || getNearestCabinetInRange();
+      if (target) attemptOpenCabinet(target);
     }
 
     // -----------------------------
@@ -711,7 +1072,7 @@ Coat the invaders in delicious yum to save the planet.`
     closeBtn.addEventListener('click', closeModal);
 
     // Click outside the modal closes it
-    uiLayer.addEventListener('mousedown', (ev) => {
+    uiLayer.addEventListener('pointerdown', (ev) => {
       if (ev.target === uiLayer) closeModal();
     });
 
