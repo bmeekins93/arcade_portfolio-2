@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KissingKids</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+</head>
+
+<body>
+    <div id="container">
+        <video id="intro-bg" src="assets/vid/intro_bg.mp4" muted loop playsinline></video>
+        <video id="game-bg" src="assets/vid/game_bg.mp4" muted loop playsinline></video>
+        <video id="cops-lights" src="assets/vid/cops_lights.mp4" loop playsinline></video>
+        <canvas id="game-canvas"></canvas>
+
+        <div id="loading-screen" class="screen">
+            <h1 class="game-title">LOADING...</h1>
+            <div class="loader"></div>
+        </div>
+
+        <div id="title-screen" class="screen" style="display: none;">
+            <h1 class="game-title">KissingKids</h1>
+            <p class="subtitle">Help Patrick kiss all the babies... or else!</p>
+            <button id="start-button" class="arcade-btn start-btn">Start Game</button>
+        </div>
+
+        <div id="hud" style="display: none;">
+            <div class="top-bar">
+                <div id="stats-panel">
+                    <p>Babies: <span id="soothed">0</span></p>
+                    <p>Score: <span id="score">0</span></p>
+                    <p>Active: <span id="active">0</span></p>
+                </div>
+                <div id="mid-panel">
+                    <div id="timer">02:00</div>
+                    <div id="power-meter-container">
+                        <div id="power-meter"></div>
+                        <div id="power-text">GAYRAY</div>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <button id="pause-button" class="icon-btn">II</button>
+                    <button id="restart-button" class="icon-btn">↻</button>
+                </div>
+            </div>
+            <button id="gayray-button" class="arcade-btn gayray-btn" style="display: none;">GAYRAY</button>
+        </div>
+
+        <div id="victory-screen" class="screen" style="display: none;">
+            <img id="cheering-crowd" src="assets/images/cheering_crowd.png" alt="Cheering Crowd">
+            <div class="victory-content">
+                <h2 class="victory-title">VICTORY!</h2>
+                <div class="victory-stats">
+                    <p>Score: <span id="victory-score"></span></p>
+                    <p>Soothed: <span id="victory-soothed"></span></p>
+                </div>
+                <div id="win-line-1" class="story-text" style="display: none;">Patrick calmed the chaos. Daycare
+                    restored. (What a creep!)</div>
+                <div id="win-line-2" class="story-text" style="display: none;">…Wait—do you hear sirens? (Patrick's
+                    going down!)</div>
+            </div>
+        </div>
+
+        <div id="arrest-screen" class="screen" style="display: none;">
+            <div class="arrest-content">
+                <h2 class="arrest-title">BUSTED</h2>
+                <div id="arrest-line">GET THE FUCK ON THE GROUND!! Patrick you're under arrest for kissing all those
+                    babies!! You're going to jail for a long time you fucking creep</div>
+                <button id="home-button" class="arcade-btn">Main Menu</button>
+            </div>
+            <img id="patrick-watermark" src="assets/images/patrick_normal.png" alt="Patrick">
+        </div>
+
+        <div id="game-over-screen" class="screen" style="display: none;">
+            <h2 class="game-over-title">GAME OVER</h2>
+            <p>Patrick overwhelmed by babies. (Loser couldn't handle it!)</p>
+            <div class="button-row">
+                <button id="retry-button" class="arcade-btn">Try Again</button>
+                <button id="home-go-button" class="arcade-btn secondary">Home</button>
+            </div>
+        </div>
+
+        <div id="pause-screen" class="screen overlay" style="display: none;">
+            <h2>PAUSED</h2>
+            <div class="button-column">
+                <button id="resume-button" class="arcade-btn">Resume</button>
+                <button id="restart-pause-button" class="arcade-btn">Restart</button>
+                <button id="home-pause-button" class="arcade-btn secondary">Home</button>
+            </div>
+        </div>
+        <audio id="main-music" src="assets/audio/K_k_mainmusic.mp3" loop></audio>
+        <audio id="kiss-sound" src="assets/audio/kiss.mp3"></audio>
+        <audio id="cry1" src="assets/audio/baby_cry.mp3" loop></audio>
+        <audio id="cry2" src="assets/audio/baby_cry.mp3" loop></audio>
+        <audio id="cry3" src="assets/audio/baby_cry.mp3" loop></audio>
+        <audio id="cry4" src="assets/audio/baby_cry.mp3" loop></audio>
+    </div>
+    <script type="module" src="src/Main.js?v=1"></script>
+</body>
+
+</html>
