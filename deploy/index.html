@@ -390,23 +390,24 @@ Expect puns and plenty of dented egos.`
       blooms: {
         title: "Blooms for Lady",
         url: "",
-        embedUrl: "assets/coming_soon.html",
+        embedUrl: "assets/html/coming_soon.html",
         text: `A floral boutique site with a neon twist.
 Even cyberpunk mercs need to send sarcastic bouquets now and then.`
       },
       ht_docs: {
         title: "Harris Teeter Docs",
         url: "",
-        embedUrl: "assets/coming_soon.html",
+        embedUrl: "assets/html/coming_soon.html",
         text: `Corporate documentation turned into a retro arcade challenge.
 Navigate the labyrinth of grocery lore with humor.`
       },
-      notyourday: {
-        title: "NOT YOUR DAY",
-        url: "https://github.com/bmeekins93/Not_Your_Day",
-        text: `WARNING: SENSORY OVERLOAD.
-A chaotic neon loop of lasers, glitch, and bad decisions.
-Press Enter to launch. You were warned.`
+      kissing_kids: {
+        title: "Kissing Kids",
+        url: "",
+        embedUrl: "games/kissing.kids/index.html",
+        text: `Soothe the crying babies!
+A chaotic daycare simulator.
+Watch out for the police!`
       },
       pro2mussy: {
         title: "pro2mussy",
@@ -647,21 +648,21 @@ Coat the invaders in delicious yum to save the planet.`
 
     function preload() {
       // Smaller, downscaled assets (faster load, same vibe)
-      this.load.image('player', 'assets/brian_sprite.png?v=2');
-      this.load.image('cab_onlycans', 'assets/onlycans_cabinet.png?v=7');
-      this.load.image('cab_blooms', 'assets/blooms_cabinet.png?v=2');
-      this.load.image('cab_ht', 'assets/ht_cabinet.png?v=2');
-      this.load.image('cab_notyourday', 'assets/notyourday_cabinet.png?v=2');
-      this.load.image('cab_pro2mussy', 'assets/pro2mussy_cabinet.png?v=2');
-      this.load.image('cab_bash', 'assets/bash_cabinet.png?v=2');
-      this.load.image('cab_jayf', 'assets/jayf_cabinet.png?v=4');
-      this.load.image('cab_ygfs', 'assets/ygfs_cabinet.png?v=2');
+      this.load.image('player', 'assets/sprites/brian_sprite.png?v=2');
+      this.load.image('cab_onlycans', 'assets/cabinets/onlycans_cabinet.png?v=7');
+      this.load.image('cab_blooms', 'assets/cabinets/blooms_cabinet.png?v=2');
+      this.load.image('cab_ht', 'assets/cabinets/ht_cabinet.png?v=2');
+      this.load.image('cab_kissing_kids', 'assets/cabinets/Kissing.kids_cabinet.png?v=1');
+      this.load.image('cab_pro2mussy', 'assets/cabinets/pro2mussy_cabinet.png?v=2');
+      this.load.image('cab_bash', 'assets/cabinets/bash_cabinet.png?v=2');
+      this.load.image('cab_jayf', 'assets/cabinets/jayf_cabinet.png?v=4');
+      this.load.image('cab_ygfs', 'assets/cabinets/ygfs_cabinet.png?v=2');
 
       // Basketball Court Background
-      this.load.image('bg_court', 'assets/Bball_crt_background.png');
+      this.load.image('bg_court', 'assets/backgrounds/Bball_crt_background.png');
 
       // Audio
-      this.load.audio('bgm', 'assets/pats_theme.mp3');
+      this.load.audio('bgm', 'assets/audio/pats_theme.mp3');
     }
 
     function create() {
@@ -681,7 +682,7 @@ Coat the invaders in delicious yum to save the planet.`
       cabinets = this.physics.add.staticGroup();
 
       // -- PAIR 1: Top Left Sideline --
-      createCabinet(this, cabinets, 420, 280, 'cab_notyourday', 'notyourday', 'NOT YOUR DAY');
+      createCabinet(this, cabinets, 420, 280, 'cab_kissing_kids', 'kissing_kids', 'Kissing Kids');
       createCabinet(this, cabinets, 630, 280, 'cab_ht', 'ht_docs', 'Harris Teeter Docs');
 
       // -- PAIR 2: Top Right Sideline --
@@ -691,6 +692,10 @@ Coat the invaders in delicious yum to save the planet.`
       // -- PAIR 3: Bottom Left Sideline --
       createCabinet(this, cabinets, 420, 1120, 'cab_pro2mussy', 'pro2mussy', 'pro2mussy');
       createCabinet(this, cabinets, 630, 1120, 'cab_bash', 'bash', 'OnlyCans: Supermarket Bash');
+
+      // -- PAIR 4: Bottom Right Sideline --
+      createCabinet(this, cabinets, 1470, 1120, 'cab_jayf', 'jayf', 'Jay-F Remix');
+      createCabinet(this, cabinets, 1680, 1120, 'cab_ygfs', 'ygfs', 'Yum Guzzlers From Space');
 
       // -- PAIR 4: Bottom Right Sideline --
       createCabinet(this, cabinets, 1470, 1120, 'cab_jayf', 'jayf', 'Jay-F Remix');
@@ -895,21 +900,21 @@ Coat the invaders in delicious yum to save the planet.`
         player.body.setVelocity((vx / len) * speed, (vy / len) * speed);
       }
 
-      // Find nearest cabinet in range
-      let nearest = null;
-      let nearestDist = Infinity;
-
+      // 1) Find nearest cabinet
+      let nearestCab = null;
+      let nearestCabDist = Infinity;
       cabinets.getChildren().forEach((cab) => {
         const d = Phaser.Math.Distance.Between(player.x, player.y, cab.x, cab.y);
-        if (d < nearestDist) {
-          nearestDist = d;
-          nearest = cab;
+        if (d < nearestCabDist) {
+          nearestCabDist = d;
+          nearestCab = cab;
         }
       });
 
-      if (nearest && nearestDist <= interactRadius) {
-        setActiveCabinet(nearest);
-
+      // 2) Check Cabinets (Removed Jukebox)
+      if (nearestCab && nearestCabDist <= interactRadius) {
+        setActiveCabinet(nearestCab);
+        promptText.setText(promptLabel);
         promptText.setPosition(
           activeCabinet.x,
           activeCabinet.y - activeCabinet.displayHeight * 0.53
@@ -924,6 +929,8 @@ Coat the invaders in delicious yum to save the planet.`
         promptText.setVisible(false);
       }
     }
+
+    // Removed toggleMusic (Jukebox feature)
 
     function getNearestCabinetInRange() {
       if (!cabinets || !player) return null;
@@ -944,8 +951,12 @@ Coat the invaders in delicious yum to save the planet.`
 
     function triggerInteract() {
       if (isInputBlocked()) return;
-      const target = activeCabinet || getNearestCabinetInRange();
-      if (target) attemptOpenCabinet(target);
+
+      const cab = getNearestCabinetInRange();
+      if (cab) {
+        attemptOpenCabinet(cab);
+      }
+
     }
 
     // -----------------------------

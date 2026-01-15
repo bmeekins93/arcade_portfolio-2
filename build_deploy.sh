@@ -24,6 +24,12 @@ if [ -d "games/onlycans_chronicles" ]; then
     cp -r "games/onlycans_chronicles" "$DEPLOY_DIR/games/"
 fi
 
+# -- Kissing Kids
+if [ -d "games/kissing.kids" ]; then
+    echo "  Copying Kissing Kids..."
+    cp -r "games/kissing.kids" "$DEPLOY_DIR/games/"
+fi
+
 # -- OnlyCans Supermarket Bash (Vite Project -> needs dist)
 if [ -d "games/onlycans_supermarket_bash/dist" ]; then
     echo "  Copying OnlyCans Supermarket Bash (dist)..."
