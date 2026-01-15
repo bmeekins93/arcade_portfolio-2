@@ -16,12 +16,21 @@ A Phaser 3-powered interactive arcade lobby that launches projects via external 
 
 Because Phaser loads assets dynamically, you must use a local server.
 
-### Python (Simple)
-From this folder:
+
+### Helper Script (Recommended)
+Run the included start script to automatically detect and launch a server (Python 3, Python 2, PHP, or Node) on port 8080:
 ```bash
-python3 -m http.server 8000
+./start_game.sh
 ```
-Then open [http://localhost:8000](http://localhost:8000).
+
+### Manual Setup
+You can also run a server manually:
+
+#### Python 3
+```bash
+python3 -m http.server 8080
+```
+Then open [http://localhost:8080](http://localhost:8080).
 
 ## Building Embedded Games
 
@@ -65,7 +74,7 @@ Simply upload the contents of the `./deploy` folder to any static host (Netlify,
 ### How to Test Deployment Locally
 ```bash
 cd deploy
-python3 -m http.server 8000
+python3 -m http.server 8080
 ```
 
 ## Maintenance Notes

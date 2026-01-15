@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Attemping to launch Arcade Portfolio..."
 
-PORT=3000
+PORT=8080
 
 # Try Python 3
 if command -v python3 &> /dev/null; then
