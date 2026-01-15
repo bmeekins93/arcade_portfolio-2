@@ -656,6 +656,7 @@ Coat the invaders in delicious yum to save the planet.`
       this.load.image('cab_bash', 'assets/bash_cabinet.png?v=2');
       this.load.image('cab_jayf', 'assets/jayf_cabinet.png?v=4');
       this.load.image('cab_ygfs', 'assets/ygfs_cabinet.png?v=2');
+      this.load.image('cab_ygfs', 'assets/ygfs_cabinet.png?v=2');
 
       // Basketball Court Background
       this.load.image('bg_court', 'assets/Bball_crt_background.png');
@@ -691,6 +692,10 @@ Coat the invaders in delicious yum to save the planet.`
       // -- PAIR 3: Bottom Left Sideline --
       createCabinet(this, cabinets, 420, 1120, 'cab_pro2mussy', 'pro2mussy', 'pro2mussy');
       createCabinet(this, cabinets, 630, 1120, 'cab_bash', 'bash', 'OnlyCans: Supermarket Bash');
+
+      // -- PAIR 4: Bottom Right Sideline --
+      createCabinet(this, cabinets, 1470, 1120, 'cab_jayf', 'jayf', 'Jay-F Remix');
+      createCabinet(this, cabinets, 1680, 1120, 'cab_ygfs', 'ygfs', 'Yum Guzzlers From Space');
 
       // -- PAIR 4: Bottom Right Sideline --
       createCabinet(this, cabinets, 1470, 1120, 'cab_jayf', 'jayf', 'Jay-F Remix');
@@ -895,21 +900,21 @@ Coat the invaders in delicious yum to save the planet.`
         player.body.setVelocity((vx / len) * speed, (vy / len) * speed);
       }
 
-      // Find nearest cabinet in range
-      let nearest = null;
-      let nearestDist = Infinity;
-
+      // 1) Find nearest cabinet
+      let nearestCab = null;
+      let nearestCabDist = Infinity;
       cabinets.getChildren().forEach((cab) => {
         const d = Phaser.Math.Distance.Between(player.x, player.y, cab.x, cab.y);
-        if (d < nearestDist) {
-          nearestDist = d;
-          nearest = cab;
+        if (d < nearestCabDist) {
+          nearestCabDist = d;
+          nearestCab = cab;
         }
       });
 
-      if (nearest && nearestDist <= interactRadius) {
-        setActiveCabinet(nearest);
-
+      // 2) Check Cabinets (Removed Jukebox)
+      if (nearestCab && nearestCabDist <= interactRadius) {
+        setActiveCabinet(nearestCab);
+        promptText.setText(promptLabel);
         promptText.setPosition(
           activeCabinet.x,
           activeCabinet.y - activeCabinet.displayHeight * 0.53
@@ -924,6 +929,8 @@ Coat the invaders in delicious yum to save the planet.`
         promptText.setVisible(false);
       }
     }
+
+    // Removed toggleMusic (Jukebox feature)
 
     function getNearestCabinetInRange() {
       if (!cabinets || !player) return null;
@@ -944,8 +951,12 @@ Coat the invaders in delicious yum to save the planet.`
 
     function triggerInteract() {
       if (isInputBlocked()) return;
-      const target = activeCabinet || getNearestCabinetInRange();
-      if (target) attemptOpenCabinet(target);
+
+      const cab = getNearestCabinetInRange();
+      if (cab) {
+        attemptOpenCabinet(cab);
+      }
+
     }
 
     // -----------------------------
