@@ -660,6 +660,7 @@ Coat the invaders in delicious yum to save the planet.`
 
       // Basketball Court Background
       this.load.image('bg_court', 'assets/backgrounds/Bball_crt_background.png');
+      this.load.image('jumbotron', 'assets/sprites/jumbotron.png');
 
       // Audio
       this.load.audio('bgm', 'assets/audio/pats_theme.mp3');
@@ -677,6 +678,22 @@ Coat the invaders in delicious yum to save the planet.`
       // 2) World bounds (so you can roam)
       this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
       this.cameras.main.setBounds(0, 0, WORLD_W, WORLD_H);
+
+      // 2.5) Jumbotron (Top Center)
+      const jumbotron = this.add.image(WORLD_W / 2, 80, 'jumbotron');
+      jumbotron.setOrigin(0.5, 0); // Top-center origin
+      jumbotron.setDepth(-2); // Above court (-3), below y-sorted entities
+      jumbotron.setInteractive({ useHandCursor: true });
+
+      // Scale it down a bit if it's huge (assuming 150-200px visual height is good for "wall" element)
+      // The user image looks wide. Let's just set a reasonable scale or use original if it fits.
+      // Let's assume it needs a bit of scaling to fit nicely on the bleachers.
+      jumbotron.setScale(0.5);
+
+      jumbotron.on('pointerdown', () => {
+        console.log("Jumbotron activated!");
+        alert("Jumbotron clicked! Video placeholder.");
+      });
 
       // 3) Cabinets
       cabinets = this.physics.add.staticGroup();
