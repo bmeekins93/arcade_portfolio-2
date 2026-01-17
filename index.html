@@ -653,7 +653,7 @@ Coat the invaders in delicious yum to save the planet.`
       this.load.image('cab_blooms', 'assets/cabinets/blooms_cabinet.png?v=2');
       this.load.image('cab_ht', 'assets/cabinets/ht_cabinet.png?v=2');
       this.load.image('cab_kissing_kids', 'assets/cabinets/Kissing.kids_cabinet.png?v=1');
-      this.load.image('cab_pro2mussy', 'assets/cabinets/pro2mussy_cabinet.png?v=2');
+      this.load.image('cab_pro2mussy', 'assets/cabinets/pro2mussy_cabinet.png?v=3');
       this.load.image('cab_bash', 'assets/cabinets/bash_cabinet.png?v=2');
       this.load.image('cab_jayf', 'assets/cabinets/jayf_cabinet.png?v=4');
       this.load.image('cab_ygfs', 'assets/cabinets/ygfs_cabinet.png?v=2');
@@ -681,19 +681,19 @@ Coat the invaders in delicious yum to save the planet.`
       this.cameras.main.setBounds(0, 0, WORLD_W, WORLD_H);
 
       // 2.5) Jumbotron Container (Video + Frame)
-      const jumbotronContainer = this.add.container(WORLD_W / 2, 80);
-      jumbotronContainer.setDepth(-2);
-      jumbotronContainer.setScale(0.5);
+      const jumbotronContainer = this.add.container(WORLD_W / 1.98, 80);
+      jumbotronContainer.setDepth(-2.42);
+      jumbotronContainer.setScale(0.45);
 
       // Layer 1: Video (Behind)
-      const video = this.add.video(0, 350, 'jumbotron_video'); // Offset Y to clear header
-      video.setOrigin(0.5, 0);
-      video.setScale(2.3); // Scale to fill width
-      video.play(true);
+      const video = this.add.video(0.25, 25, 'jumbotron_video'); // Offset Y to clear header
+      video.setOrigin(0.5, -0.05);
+      video.setScale(1.65); // Scale to fill width
+      // video.play(true);
 
       // Layer 2: Frame (Front)
-      const frame = this.add.image(0, 0, 'jumbotron');
-      frame.setOrigin(0.5, 0);
+      const frame = this.add.image(0.5, 0.08, 'jumbotron');
+      frame.setOrigin(0.5, 0.06);
 
       // Add to container (Order matters: first added is bottom)
       jumbotronContainer.add([video, frame]);
@@ -704,7 +704,12 @@ Coat the invaders in delicious yum to save the planet.`
         if (video.isPlaying()) {
           video.setPaused(true);
         } else {
-          video.setPaused(false);
+          // If paused, resume; if never started, play
+          if (video.isPaused()) {
+            video.setPaused(false);
+          } else {
+            video.play(true);
+          }
         }
       });
 
