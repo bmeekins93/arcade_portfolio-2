@@ -732,10 +732,6 @@ Coat the invaders in delicious yum to save the planet.`
       createCabinet(this, cabinets, 1470, 1120, 'cab_jayf', 'jayf', 'Jay-F Remix');
       createCabinet(this, cabinets, 1680, 1120, 'cab_ygfs', 'ygfs', 'Yum Guzzlers From Space');
 
-      // -- PAIR 4: Bottom Right Sideline --
-      createCabinet(this, cabinets, 1470, 1120, 'cab_jayf', 'jayf', 'Jay-F Remix');
-      createCabinet(this, cabinets, 1680, 1120, 'cab_ygfs', 'ygfs', 'Yum Guzzlers From Space');
-
       // 4) Player
       player = this.physics.add.sprite(1050, 700, 'player');
 
@@ -935,19 +931,10 @@ Coat the invaders in delicious yum to save the planet.`
         player.body.setVelocity((vx / len) * speed, (vy / len) * speed);
       }
 
-      // 1) Find nearest cabinet
-      let nearestCab = null;
-      let nearestCabDist = Infinity;
-      cabinets.getChildren().forEach((cab) => {
-        const d = Phaser.Math.Distance.Between(player.x, player.y, cab.x, cab.y);
-        if (d < nearestCabDist) {
-          nearestCabDist = d;
-          nearestCab = cab;
-        }
-      });
+      // Check cabinet proximity
+      const nearestCab = getNearestCabinetInRange();
 
-      // 2) Check Cabinets (Removed Jukebox)
-      if (nearestCab && nearestCabDist <= interactRadius) {
+      if (nearestCab) {
         setActiveCabinet(nearestCab);
         promptText.setText(promptLabel);
         promptText.setPosition(
@@ -964,8 +951,6 @@ Coat the invaders in delicious yum to save the planet.`
         promptText.setVisible(false);
       }
     }
-
-    // Removed toggleMusic (Jukebox feature)
 
     function getNearestCabinetInRange() {
       if (!cabinets || !player) return null;
@@ -1172,9 +1157,8 @@ Coat the invaders in delicious yum to save the planet.`
 
       modalTitle.textContent = (p.title || "").toUpperCase();
 
-      // Link handling
-      // Link handling
-      // Reset listeners (simple way: replace node or just use onclick)
+      // Link handling — reset listeners via onclick
+
       openBtn.onclick = (e) => {
         if (p.embedUrl) {
           e.preventDefault();
