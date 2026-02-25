@@ -53,11 +53,7 @@ To rebuild Supermarket Bash:
 
 ## Deployment
 
-This project is ready for static hosting (GitHub Pages, Netlify, Vercel).
-
-## Deployment
-
-This project includes a build script to create a clean, host-ready version of the portfolio, stripping out large development files like `node_modules`.
+This project is ready for static hosting (GitHub Pages, Netlify, Vercel). A build script creates a clean, host-ready version of the portfolio, stripping out large development files like `node_modules`.
 
 ### How to Build
 Run the build script from the project root:
