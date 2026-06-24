@@ -1,14 +1,8 @@
 import { FighterOptions, HitPayload, MoveData, FighterAssets } from './types';
 import Phaser from 'phaser';
 import { MOVES, totalFrames } from './moves';
-
-const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
-
-const approach = (v: number, target: number, delta: number) => {
-  if (v < target) return Math.min(v + delta, target);
-  if (v > target) return Math.max(v - delta, target);
-  return target;
-};
+import { clamp, approach } from './mathUtils';
+import { resolveHit } from './combatMath';
 
 export class Fighter {
   scene: any;
@@ -201,37 +195,24 @@ export class Fighter {
   }
 
   takeHit(payload: HitPayload, isBlocked: boolean, attackerFacing: number) {
-    const { damage, knockbackX, knockbackY, hitstun } = payload;
+    const res = resolveHit(payload, isBlocked, attackerFacing, this.velY);
 
-    if (isBlocked) {
-      const chip = Math.max(1, Math.floor(damage * 0.25));
-      this.hp = Math.max(0, this.hp - chip);
-
-      this.blockstunFrames = Math.max(this.blockstunFrames, Math.floor(hitstun * 0.65));
-
-      // Pushback on block (smaller)
-      this.velX = attackerFacing * knockbackX * 0.35;
-      this.velY = Math.min(this.velY, -knockbackY * 0.05);
-
-      this.state = 'block';
-      this.actionFrame = 0;
-
-      return { blocked: true, amount: chip };
-    }
-
-    this.hp = Math.max(0, this.hp - damage);
-
-    this.hitstunFrames = Math.max(this.hitstunFrames, hitstun);
-    this.blockstunFrames = 0;
-
-    this.velX = attackerFacing * knockbackX;
-    this.velY = -knockbackY;
-
-    this.onGround = false;
-    this.state = 'hitstun';
+    this.hp = Math.max(0, this.hp - res.hpLoss);
+    this.velX = res.velX;
+    this.velY = res.velY;
     this.actionFrame = 0;
 
-    return { blocked: false, amount: damage };
+    if (res.blocked) {
+      this.blockstunFrames = Math.max(this.blockstunFrames, res.blockstunFrames);
+      this.state = 'block';
+      return { blocked: true, amount: res.hpLoss };
+    }
+
+    this.hitstunFrames = Math.max(this.hitstunFrames, res.hitstunFrames);
+    this.blockstunFrames = 0;
+    this.onGround = false;
+    this.state = 'hitstun';
+    return { blocked: false, amount: res.hpLoss };
   }
 
   updateFixed(dt: number, input: any, opponent: Fighter, world: any) {
