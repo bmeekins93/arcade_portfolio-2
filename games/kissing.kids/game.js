@@ -62,15 +62,15 @@ let animationFrame;
 
 // Images
 const patrickNormal = new Image();
-patrickNormal.src = 'assets/images/patrick_normal.png';
+patrickNormal.src = 'assets/images/patrick_normal.webp';
 const patrickKiss = new Image();
-patrickKiss.src = 'assets/images/patrick_kiss.png';
+patrickKiss.src = 'assets/images/patrick_kiss.webp';
 const baby1 = new Image();
-baby1.src = 'assets/images/baby1.png';
+baby1.src = 'assets/images/baby1.webp';
 const baby1Alt = new Image();
-baby1Alt.src = 'assets/images/baby1_alt.png';
+baby1Alt.src = 'assets/images/baby1_alt.webp';
 const vapBaby = new Image();
-vapBaby.src = 'assets/images/vap_baby.png';
+vapBaby.src = 'assets/images/vap_baby.webp';
 
 const ROUND_DURATION = 120;
 const SPAWN_INTERVAL_BASE = 3.33;

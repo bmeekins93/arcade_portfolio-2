@@ -1,6 +1,6 @@
 let currentState = 'step1';
 let tosVersion = 1;
-const adImage = 'pats_ad.jpeg';
+const adImage = 'pats_ad.webp';
 
 // audio variables
 let audioCtx;

@@ -10,11 +10,11 @@ export class AssetLoader {
 
         // Define Images
         const imageSources = {
-            patrickNormal: 'assets/images/patrick_normal.png',
-            patrickKiss: 'assets/images/patrick_kiss.png',
-            baby1: 'assets/images/baby1.png',
-            baby1Alt: 'assets/images/baby1_alt.png',
-            vapBaby: 'assets/images/vap_baby.png'
+            patrickNormal: 'assets/images/patrick_normal.webp',
+            patrickKiss: 'assets/images/patrick_kiss.webp',
+            baby1: 'assets/images/baby1.webp',
+            baby1Alt: 'assets/images/baby1_alt.webp',
+            vapBaby: 'assets/images/vap_baby.webp'
         };
 
         // Load Images

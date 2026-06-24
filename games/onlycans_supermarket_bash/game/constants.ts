@@ -2,22 +2,22 @@ import { CharacterBase } from './types';
 import { JASON_ATLAS } from './jasonData';
 import { DAVID_ATLAS } from './davidData';
 import { DAVE_ATLAS } from './daveData';
-import jasonSpriteSheet from './assets/character_sprites_animations/Jason_spritesheet_grid_1080.png';
-import davidSpriteSheet from './assets/character_sprites_animations/david_spritesheet_grid_1080.png';
-import daveSpriteSheet from './assets/character_sprites_animations/dave_spritesheet_grid_1080.png';
-import jasonCard from './assets/character_player_cards/jason_playercard-2.png';
-import davidCard from './assets/character_player_cards/david_playercard-3.png';
-import daveCard from './assets/character_player_cards/dave_playercard-1.png';
-import jayCard from './assets/character_player_cards/jay_playercard.png';
-import jaySpriteSheet from './assets/character_sprites_animations/Jay_spritesheet.png';
+import jasonSpriteSheet from './assets/character_sprites_animations/Jason_spritesheet_grid_1080.webp';
+import davidSpriteSheet from './assets/character_sprites_animations/david_spritesheet_grid_1080.webp';
+import daveSpriteSheet from './assets/character_sprites_animations/dave_spritesheet_grid_1080.webp';
+import jasonCard from './assets/character_player_cards/jason_playercard-2.webp';
+import davidCard from './assets/character_player_cards/david_playercard-3.webp';
+import daveCard from './assets/character_player_cards/dave_playercard-1.webp';
+import jayCard from './assets/character_player_cards/jay_playercard.webp';
+import jaySpriteSheet from './assets/character_sprites_animations/Jay_spritesheet.webp';
 import { JAY_ATLAS } from './jayData';
 
 // World Backgrounds
-import dairyCoolerL0 from './assets/world_backgrounds/outside_the_dairy_cooler/parallax_layer0_inside.png';
-import dairyCoolerL1 from './assets/world_backgrounds/outside_the_dairy_cooler/parallax_layer1_background.png';
-import dairyCoolerL2 from './assets/world_backgrounds/outside_the_dairy_cooler/parallax_layer2_door.png';
-import dairyCoolerL3 from './assets/world_backgrounds/outside_the_dairy_cooler/parallax_layer3_track.png';
-import dairyCoolerL4 from './assets/world_backgrounds/outside_the_dairy_cooler/parallax_layer4_hangers.png';
+import dairyCoolerL0 from './assets/world_backgrounds/outside_the_dairy_cooler/parallax_layer0_inside.webp';
+import dairyCoolerL1 from './assets/world_backgrounds/outside_the_dairy_cooler/parallax_layer1_background.webp';
+import dairyCoolerL2 from './assets/world_backgrounds/outside_the_dairy_cooler/parallax_layer2_door.webp';
+import dairyCoolerL3 from './assets/world_backgrounds/outside_the_dairy_cooler/parallax_layer3_track.webp';
+import dairyCoolerL4 from './assets/world_backgrounds/outside_the_dairy_cooler/parallax_layer4_hangers.webp';
 
 export const WORLD = {
   width: 960,
@@ -117,7 +117,7 @@ export const CHARACTERS: CharacterBase[] = [
   },
 ];
 
-import dairyCoolerPreview from './assets/ui/stage_dairy_cooler_preview.png';
+import dairyCoolerPreview from './assets/ui/stage_dairy_cooler_preview.webp';
 
 export const WORLDS = [
   {

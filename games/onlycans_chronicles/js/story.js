@@ -4,15 +4,15 @@
 const GAME_DATA = {
   assets: {
     images: {
-      logo: "assets/images/logo.png",
+      logo: "assets/images/logo.webp",
       bg_dojo: "assets/images/bg_dojo.png",
       bg_breakroom: "assets/images/bg_breakroom.png",
       bg_neon_alley: "assets/images/bg_neon_alley.png",
       bg_phone: "assets/images/bg_phone.png",
 
-      jason: "assets/images/jason.png",
-      david: "assets/images/david.png",
-      priscilla: "assets/images/priscilla.png",
+      jason: "assets/images/jason.webp",
+      david: "assets/images/david.webp",
+      priscilla: "assets/images/priscilla.webp",
     },
     audio: {
       music: {
