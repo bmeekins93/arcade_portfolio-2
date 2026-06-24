@@ -19,10 +19,10 @@ export class MatchScene extends Phaser.Scene {
   _prevEsc: boolean;
   _tmpRect: any;
   keys: any;
-  p1Input: InputManager;
-  p2Input: InputManager;
-  p1: Fighter;
-  p2: Fighter;
+  p1Input!: InputManager;
+  p2Input!: InputManager;
+  p1!: Fighter;
+  p2!: Fighter;
   ui: any;
   debugGfx: any;
   bannerText: any;
@@ -157,7 +157,7 @@ export class MatchScene extends Phaser.Scene {
     this.add.line(0, 0, 0, WORLD.groundY, WORLD.width, WORLD.groundY, 0x2b313a).setOrigin(0, 0);
 
     // Keys
-    this.keys = this.input.keyboard.addKeys({
+    this.keys = this.input.keyboard!.addKeys({
       // P1
       p1_left: 'A',
       p1_right: 'D',

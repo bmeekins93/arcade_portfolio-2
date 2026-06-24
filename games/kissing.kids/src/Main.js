@@ -98,16 +98,23 @@ class Game {
         document.addEventListener('click', unlockAudio);
         document.addEventListener('touchstart', unlockAudio);
 
-        this.ui.buttons.start.addEventListener('click', () => this.startGame());
-        this.ui.buttons.retry.addEventListener('click', () => this.restartGame());
-        this.ui.buttons.home.addEventListener('click', () => this.resetGame());
-        this.ui.buttons.homeGo.addEventListener('click', () => this.resetGame());
-        this.ui.buttons.homePause.addEventListener('click', () => this.resetGame());
-        this.ui.buttons.restartPause.addEventListener('click', () => this.restartGame());
-        this.ui.buttons.resume.addEventListener('click', () => this.togglePause());
-        this.ui.buttons.pause.addEventListener('click', () => this.togglePause());
-        this.ui.buttons.restart.addEventListener('click', () => this.restartGame());
-        this.ui.buttons.gayray.addEventListener('click', () => this.activateGayray());
+        // Wire UI buttons to their handlers (name -> action)
+        const buttonHandlers = {
+            start: () => this.startGame(),
+            retry: () => this.restartGame(),
+            home: () => this.resetGame(),
+            homeGo: () => this.resetGame(),
+            homePause: () => this.resetGame(),
+            restartPause: () => this.restartGame(),
+            resume: () => this.togglePause(),
+            pause: () => this.togglePause(),
+            restart: () => this.restartGame(),
+            gayray: () => this.activateGayray()
+        };
+        for (const [name, handler] of Object.entries(buttonHandlers)) {
+            const btn = this.ui.buttons[name];
+            if (btn) btn.addEventListener('click', handler);
+        }
     }
 
     spawnParticles(x, y, count, type) {
@@ -435,7 +442,12 @@ class Game {
 
     gameLoop(timestamp) {
         const now = timestamp / 1000;
-        const delta = 1 / 60; // Or calculate real delta
+        // Real elapsed time keeps timers/motion wall-clock accurate across
+        // refresh rates. Clamp to avoid huge jumps after tab switches/stalls.
+        if (this.lastTimestamp === undefined) this.lastTimestamp = now;
+        let delta = now - this.lastTimestamp;
+        this.lastTimestamp = now;
+        if (delta > 0.1) delta = 0.1;
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 

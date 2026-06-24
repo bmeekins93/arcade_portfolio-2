@@ -1,54 +1,10 @@
-export const DAVID_ATLAS = {
-    "frames": {
-        "david_standingstill-7.png": {
-            "frame": { "x": 0, "y": 0, "w": 1080, "h": 1080 },
-            "rotated": false,
-            "trimmed": false,
-            "spriteSourceSize": { "x": 0, "y": 0, "w": 1080, "h": 1080 },
-            "sourceSize": { "w": 1080, "h": 1080 }
-        },
-        "david_jump-8.png": {
-            "frame": { "x": 1080, "y": 0, "w": 1080, "h": 1080 },
-            "rotated": false,
-            "trimmed": false,
-            "spriteSourceSize": { "x": 0, "y": 0, "w": 1080, "h": 1080 },
-            "sourceSize": { "w": 1080, "h": 1080 }
-        },
-        "david_ponytailwhip-9.png": {
-            "frame": { "x": 2160, "y": 0, "w": 1080, "h": 1080 },
-            "rotated": false,
-            "trimmed": false,
-            "spriteSourceSize": { "x": 0, "y": 0, "w": 1080, "h": 1080 },
-            "sourceSize": { "w": 1080, "h": 1080 }
-        },
-        "david_moving-10.png": {
-            "frame": { "x": 0, "y": 1080, "w": 1080, "h": 1080 },
-            "rotated": false,
-            "trimmed": false,
-            "spriteSourceSize": { "x": 0, "y": 0, "w": 1080, "h": 1080 },
-            "sourceSize": { "w": 1080, "h": 1080 }
-        },
-        "david_poke-11.png": {
-            "frame": { "x": 1080, "y": 1080, "w": 1080, "h": 1080 },
-            "rotated": false,
-            "trimmed": false,
-            "spriteSourceSize": { "x": 0, "y": 1080, "w": 1080, "h": 1080 },
-            "sourceSize": { "w": 1080, "h": 1080 }
-        },
-        "david_block-12.png": {
-            "frame": { "x": 2160, "y": 1080, "w": 1080, "h": 1080 },
-            "rotated": false,
-            "trimmed": false,
-            "spriteSourceSize": { "x": 2160, "y": 1080, "w": 1080, "h": 1080 },
-            "sourceSize": { "w": 1080, "h": 1080 }
-        }
-    },
-    "meta": {
-        "app": "chatgpt-atlas",
-        "version": "1.0",
-        "image": "david_spritesheet_grid_1080.png",
-        "size": { "w": 3240, "h": 2160 },
-        "scale": "1",
-        "format": "grid 3x2, cell 1080x1080"
-    }
-};
+import { makeGridAtlas } from './atlasFactory';
+
+export const DAVID_ATLAS = makeGridAtlas('david_spritesheet_grid_1080.png', [
+  'david_standingstill-7.png',
+  'david_jump-8.png',
+  'david_ponytailwhip-9.png',
+  'david_moving-10.png',
+  'david_poke-11.png',
+  'david_block-12.png'
+]);
