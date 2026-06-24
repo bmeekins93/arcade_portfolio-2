@@ -19,9 +19,12 @@ if [ -d "$DEPLOY_DIR" ]; then
 fi
 mkdir -p "$DEPLOY_DIR"
 
-# 3) Copy Core Files (index.html, README for the deploy)
+# 3) Copy Core Files (index.html + extracted lobby source in src/)
 echo "[2/4] Copying core files..."
 cp "$PROJECT_ROOT/index.html" "$DEPLOY_DIR/"
+rsync -av --progress "$PROJECT_ROOT/src/" "$DEPLOY_DIR/src/" \
+  --exclude ".DS_Store" \
+  --exclude "__MACOSX"
 
 # 4) Copy Assets (Excluding unused)
 echo "[3/4] Copying assets (skipping unused)..."

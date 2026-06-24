@@ -57,7 +57,7 @@ export class MainMenuScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Input listeners
-    this.input.keyboard.on('keydown', () => this.startGame());
+    this.input.keyboard!.on('keydown', () => this.startGame());
     this.input.on('pointerdown', () => this.startGame());
 
     // Blink effect

@@ -1,0 +1,6 @@
+node_modules
+dist
+deploy
+assets
+**/*.min.js
+games/**/node_modules

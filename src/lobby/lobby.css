@@ -1,0 +1,328 @@
+:root {
+  --hud-font: clamp(11px, 1.6vw, 14px);
+  --modal-font: clamp(14px, 2.1vw, 18px);
+  --touch-size: clamp(92px, 18vw, 150px);
+  --touch-knob: clamp(40px, 8vw, 68px);
+  --touch-gap: clamp(12px, 3vw, 26px);
+  --action-size: clamp(64px, 12vw, 110px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* BASE */
+body {
+  margin: 0;
+  background: #050505;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  height: 100svh;
+  height: 100dvh;
+  touch-action: none;
+  user-select: none;
+}
+
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100svh;
+  height: 100dvh;
+  touch-action: none;
+}
+
+
+/* HUD + SCANLINES */
+#hud {
+  position: absolute;
+  left: max(12px, env(safe-area-inset-left));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  z-index: 5;
+  pointer-events: none;
+  color: rgba(0, 255, 0, 0.78);
+  font-size: var(--hud-font);
+  letter-spacing: 0.4px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(0, 255, 0, 0.22);
+  padding: 8px 10px;
+  border-radius: 6px;
+  max-width: 70vw;
+  line-height: 1.4;
+}
+
+#scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.07;
+  background: repeating-linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.0) 0px,
+      rgba(255, 255, 255, 0.0) 2px,
+      rgba(0, 0, 0, 0.55) 3px);
+}
+
+/* UI OVERLAY */
+#ui-layer {
+  display: none;
+  /* hidden by default */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.65);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* CRT MODAL */
+.crt {
+  position: relative;
+  background: #000;
+  color: #0f0;
+  border: 4px solid #0f0;
+  padding: 26px 28px 20px;
+  width: min(440px, 92vw);
+  max-width: 85%;
+  box-shadow: 0 0 20px #0f0, inset 0 0 20px rgba(0, 255, 0, 0.2);
+  text-shadow: 0 0 5px #0f0;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.crt::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 2px, 3px 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+#modal-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed #0f0;
+  padding-bottom: 10px;
+}
+
+#modal-content {
+  font-size: var(--modal-font);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 6px;
+}
+
+#modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #0f0;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 3;
+  font-weight: bold;
+}
+
+#modal-close:hover {
+  text-shadow: 0 0 10px #fff;
+}
+
+#modal-actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  z-index: 3;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+#modal-open {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 2px solid #0f0;
+  color: #0f0;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+#modal-open:hover {
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.6);
+}
+
+#modal-hint {
+  margin-top: 16px;
+  font-size: 0.82em;
+  opacity: 0.72;
+  z-index: 3;
+  position: relative;
+}
+
+/* EMBED OVERLAY */
+#game-embed-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 100;
+  flex-direction: column;
+}
+
+#embed-iframe {
+  flex: 1;
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+
+#embed-controls {
+  min-height: clamp(44px, 6vh, 64px);
+  background: #111;
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  padding-top: max(6px, env(safe-area-inset-top));
+  padding-bottom: 6px;
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
+  justify-content: space-between;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(12px, 2vw, 14px);
+}
+
+#close-embed-btn {
+  background: transparent;
+  border: 1px solid #0f0;
+  color: #0f0;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: inherit;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+#close-embed-btn:hover {
+  background: #0f0;
+  color: #000;
+}
+
+/* TOUCH CONTROLS */
+#touch-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-top: 0;
+  padding-bottom: calc(var(--touch-gap) + env(safe-area-inset-bottom));
+  padding-left: max(var(--touch-gap), env(safe-area-inset-left));
+  padding-right: max(var(--touch-gap), env(safe-area-inset-right));
+  pointer-events: none;
+}
+
+body.touch #touch-controls {
+  display: flex;
+}
+
+#joystick-base {
+  width: var(--touch-size);
+  height: var(--touch-size);
+  border-radius: 999px;
+  border: 2px solid rgba(0, 255, 0, 0.6);
+  background: transparent;
+  position: relative;
+  pointer-events: auto;
+  touch-action: none;
+  box-shadow: 0 0 14px rgba(0, 255, 0, 0.25);
+}
+
+#joystick-knob {
+  width: var(--touch-knob);
+  height: var(--touch-knob);
+  border-radius: 999px;
+  background: transparent;
+  border: 2px solid rgba(0, 255, 0, 0.9);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.35);
+  pointer-events: none;
+}
+
+#action-button {
+  width: var(--action-size);
+  height: var(--action-size);
+  border-radius: 999px;
+  border: 2px solid rgba(0, 255, 0, 0.9);
+  background: transparent;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  font-size: clamp(16px, 3vw, 24px);
+  box-shadow: 0 0 16px rgba(0, 255, 0, 0.35);
+  pointer-events: auto;
+  touch-action: none;
+}
+
+#action-button:active {
+  transform: scale(0.96);
+  box-shadow: 0 0 22px rgba(0, 255, 0, 0.6);
+}
+
+/* ORIENTATION LOCK */
+#rotate-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.86);
+  color: #0f0;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(16px, 3.2vw, 22px);
+  letter-spacing: 1px;
+  padding: 20px;
+}
+
+body.portrait #rotate-overlay {
+  display: flex;
+}
+
+body.portrait #touch-controls {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  #hud {
+    left: 8px;
+    bottom: 8px;
+    padding: 6px 8px;
+  }
+}
